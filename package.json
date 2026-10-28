@@ -1,0 +1,11 @@
+{
+  "name": "sawah-riyadh",
+  "version": "1.10.0",
+  "private": true,
+  "description": "SAWAH | سواح — Riyadh trip planner demo built on the SAWAH v1.10 datasets",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node build.mjs && node tests/scenarios.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

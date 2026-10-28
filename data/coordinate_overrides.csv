@@ -1,0 +1,2 @@
+poi_id,latitude,longitude,source,verified_on,notes
+SAWAH-RUH-0083F3EEDE,24.7699598,46.6090347,Michelin Guide listing for SASANI (3340 Suwayd Ibn Harithah; Hittin),2026-10-28,"Branch had routing_provider_place_id only (static_coordinates_not_cached). Coordinates taken from the public Michelin Guide page. Replace with Google Places resolution when an API key is available."
