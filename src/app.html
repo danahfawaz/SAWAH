@@ -695,7 +695,7 @@ const T={
   n_hrsUnverified:'ساعات العمل غير مؤكدة رسميًا، تحقق قبل الزيارة',n_hrsNone:'ساعات العمل غير متوفرة، تحقق قبل الزيارة',n_hrsDyn:'المواعيد تتغير حسب التقويم أو العروض، تحقق قبل الزيارة',n_hrsSeason:'ساعات موسمية وقد تتغير، يُنصح بالتحقق قبل الزيارة',
   n_priceDyn:'السعر يختلف حسب العرض أو الموعد، ولم يُحسب في المجموع',n_priceUnknown:'السعر غير متوفر، ولم يُحسب في المجموع',n_optSpend:'مصاريف إضافية اختيارية غير محسوبة في الميزانية',n_browse:'التجول مجاني، والشراء اختياري',
   n_book:'يتطلب حجزًا مسبقًا',n_bookRec:'يُنصح بالحجز',n_noCoords:'موقع الفرع يُفتح في خرائط Google',n_over:'أعلى من ميزانية اليوم',n_far:'رحلة خارج المدينة',n_closedRisk:'قد يكون مغلقًا في هذا الوقت، راجع الساعات',n_notItin:'للاكتشاف فقط، ولا يُضاف للخطط تلقائيًا',n_season:'خارج الموسم الحالي',
-  bookBtn:'الحجز من المصدر الرسمي',siteBtn:'الموقع الرسمي',gmaps:'فتح في خرائط Google',closedToday:'مغلق في هذا اليوم',hrsDynTxt:'حسب العروض',hrsNA:'غير متوفرة',
+  bookBtn:'الحجز من المصدر الرسمي',siteBtn:'الموقع الرسمي',gmaps:'فتح في خرائط Google',closedToday:'مغلق في هذا اليوم',hrsDynTxt:'حسب العروض',hrsNA:'غير متوفرة',open24:'مفتوح دائمًا',
   tiers:{budget:'اقتصادي','mid-range':'متوسط',luxury:'فاخر'},
   wk:['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت']
  },
@@ -754,7 +754,7 @@ const T={
   n_hrsUnverified:'Opening hours not officially confirmed, check before visiting',n_hrsNone:'Opening hours not available, check before visiting',n_hrsDyn:'Schedule changes by calendar or session, check before visiting',n_hrsSeason:'Seasonal hours may change, check before visiting',
   n_priceDyn:'Price varies by session or date and is not counted in the total',n_priceUnknown:'Price not available and not counted in the total',n_optSpend:'Optional extra spending is not counted in the budget',n_browse:'Free to walk around; shopping is optional',
   n_book:'Booking required',n_bookRec:'Booking recommended',n_noCoords:'Branch location opens in Google Maps',n_over:'Above the day’s budget',n_far:'Trip outside the city',n_closedRisk:'May be closed at this time, check the hours',n_notItin:'For discovery only, not added to plans automatically',n_season:'Outside the current season',
-  bookBtn:'Book on the official source',siteBtn:'Official website',gmaps:'Open in Google Maps',closedToday:'Closed on this day',hrsDynTxt:'By session',hrsNA:'Not available',
+  bookBtn:'Book on the official source',siteBtn:'Official website',gmaps:'Open in Google Maps',closedToday:'Closed on this day',hrsDynTxt:'By session',hrsNA:'Not available',open24:'Open 24 hours',
   tiers:{budget:'Budget','mid-range':'Mid-range',luxury:'Luxury'},
   wk:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
  }
@@ -811,6 +811,7 @@ function hoursTxt(p,date,br){
   if(h.kind==='none') return t('hrsNA');
   if(h.offSeason) return t('n_season');
   if(!h.iv.length) return t('closedToday');
+  if(h.iv.length===1&&h.iv[0][0]<=0&&h.iv[0][1]>=1440) return t('open24');
   return h.iv.map(([o,c])=>`${hm(o)}–${hm(c)}`).join('، ');
 }
 const dateLabel=(d,long)=>{const w=t('wk')[d.getDay()];return S.lang==='ar'?`${long?w+' ':''}${d.getDate()} ${MONAR[d.getMonth()]}`:`${long?w.slice(0,3)+' ':''}${d.getDate()} ${MONENL[d.getMonth()]}`};
@@ -1155,12 +1156,11 @@ function notesHTML(p,s){
     const ci=PL.costAt(p,12*60);
     if(ci.k==='dynamic') out.push(['wallet',t('n_priceDyn')]);
     if(ci.k==='browse') out.push(['wallet',t('n_browse')]);
-    if(p.cost&&p.cost.opt==='yes') out.push(['wallet',t('n_optSpend')]);
+    if(p.ui&&p.ui.ex) out.push(['wallet',esc(L(p.ui.ex))]); else if(p.cost&&p.cost.opt==='yes') out.push(['wallet',t('n_optSpend')]);
     if(p.bk&&p.bk.rq==='yes') out.push(['cal',t('n_book')]); else if(p.bk&&p.bk.rc==='yes') out.push(['cal',t('n_bookRec')]);
-    if(!p.itin&&p.cat!=='hotel') out.push(['pin',t('n_notItin')]);
   } else {
     const M={closedRisk:['clock','n_closedRisk','warn'],over:['wallet','n_over','warn'],hrsUnverified:['clock','n_hrsUnverified'],hrsNone:['clock','n_hrsNone'],hrsDyn:['clock','n_hrsDyn'],hrsSeason:['clock','n_hrsSeason'],priceDyn:['wallet','n_priceDyn'],priceUnknown:['wallet','n_priceUnknown'],browse:['wallet','n_browse'],optSpend:['wallet','n_optSpend'],book:['cal','n_book'],bookRec:['cal','n_bookRec'],noCoords:['pin','n_noCoords'],far:['route','n_far']};
-    fl.forEach(k=>{if(M[k])out.push([M[k][0],t(M[k][1]),M[k][2]])});
+    fl.forEach(k=>{if(k==='optSpend'&&p.ui&&p.ui.ex) out.push(['wallet',esc(L(p.ui.ex))]); else if(M[k])out.push([M[k][0],t(M[k][1]),M[k][2]])});
   }
   if(p.rest) out.push(['people',esc(L(p.rest))]);
   return out.length?`<div class="flags">${out.map(([i,x,c])=>flagLine(i,x,c)).join('')}</div>`:'';
@@ -1178,7 +1178,8 @@ function linksHTML(p,s){
   const b=s&&s.br?byId[s.br]:(p.branches&&p.branches.length===1?byId[p.branches[0]]:null), bk=(b&&b.bk&&b.bk.url)?b.bk:p.bk;
   const gm=gmapsOf(p,b);
   const a=[];
-  if(bk&&bk.url) a.push(`<a class="btn ghost sm" href="${esc(bk.url)}" target="_blank" rel="noopener">${ic('cal')}${t('bookBtn')}</a>`);
+  if(bk&&bk.url) a.push(`<a class="btn ghost sm" href="${esc(bk.url)}" target="_blank" rel="noopener">${ic('cal')}${p.ui&&p.ui.bk?esc(L(p.ui.bk)):t('bookBtn')}</a>`);
+  if(p.ui&&p.ui.exUrl) a.push(`<a class="btn ghost sm" href="${esc(p.ui.exUrl)}" target="_blank" rel="noopener">${ic('pin')}${esc(L(p.ui.exL||['الموقع','Location']))}</a>`);
   if(p.web&&(!bk||p.web!==bk.url)) a.push(`<a class="btn ghost sm" href="${esc(p.web)}" target="_blank" rel="noopener">${ic('globe')}${t('siteBtn')}</a>`);
   if(gm) a.push(`<a class="btn ghost sm" href="${esc(gm)}" target="_blank" rel="noopener">${ic('pin')}${t('gmaps')}</a>`);
   return a.length?`<div class="linkrow">${a.join('')}</div>`:'';

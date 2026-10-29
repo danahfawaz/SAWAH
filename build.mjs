@@ -32,6 +32,7 @@ const branches = load(file('branch_locations')) || [];
 const access = load(file('access_points')) || [];
 const hotels = load(file('hotels')) || [];
 const overrides = load('data/coordinate_overrides.csv') || [];
+const placeNotes = load('data/place_notes.csv') || [];               // team-written notes shown on a place (booking label, optional extras + link)
 if (!main || !mapPl) throw new Error('main_places and map_places CSV files are required in ./data');
 
 /* ---------- helpers ---------- */
@@ -117,6 +118,17 @@ const places = main.map(r => {
 const apBy = {};
 for (const a of access) (apBy[a.place_poi_id] = apBy[a.place_poi_id] || []).push({ n: [a.access_name_ar, a.access_name_en], ll: ll(a), role: a.access_role });
 for (const p of places) if (apBy[p.id]) p.aps = apBy[p.id];
+
+/* team notes per place (data/place_notes.csv) */
+for (const nt of placeNotes) {
+  const p = places.find(x => x.id === nt.poi_id); if (!p) { (report.unresolved = report.unresolved || []).push('place_notes: ' + nt.poi_id); continue; }
+  p.ui = {
+    bk: nt.booking_label_ar || nt.booking_label_en ? [nt.booking_label_ar || nt.booking_label_en, nt.booking_label_en || nt.booking_label_ar] : null,
+    ex: nt.extra_note_ar || nt.extra_note_en ? [nt.extra_note_ar || nt.extra_note_en, nt.extra_note_en || nt.extra_note_ar] : null,
+    exUrl: nt.extra_link_url || null,
+    exL: nt.extra_link_label_ar || nt.extra_link_label_en ? [nt.extra_link_label_ar || nt.extra_link_label_en, nt.extra_link_label_en || nt.extra_link_label_ar] : null
+  };
+}
 
 /* brands: one entity per brand_group_id; branches stay as their own records for routing */
 const brandMap = {};

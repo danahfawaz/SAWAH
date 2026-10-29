@@ -33,6 +33,7 @@ Needs Node 18+. No npm dependencies.
 | `sawah_access_points_FINAL_v1.10.csv` | Access points for linear places (Sports Boulevard, Wadi Hanifa, Wadi Namar, Red Sands) |
 | `sawah_hotels_FINAL_v1.10.csv` | Hotel anchors (tier: budget / mid-range / luxury) |
 | `coordinate_overrides.csv` | Coordinates found for a branch that only had a Google place id (SASANI – Hittin, from its Michelin Guide page) |
+| `place_notes.csv` | Notes written by the SAWAH team for a place: a custom booking-button label, an optional-extras note and an extra link (e.g. Red Sands: optional guided tour, quad bikes and their location) |
 
 `dist/data-report.json` lists anything the build could not resolve. Currently: Bayt Al-Malaz (As Sahafah) and PUBLIC (Al Dhabab) have no static coordinates (only a Google place id). They stay in the data; the app shows "opens in Google Maps" for them and the planner prefers branches with known locations.
 
