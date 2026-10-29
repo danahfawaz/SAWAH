@@ -73,6 +73,19 @@ function effHours(p, raw, date, hs) {
   return { iv: outdoor ? [[7 * 60, 19 * 60]] : [[10 * 60, 21 * 60]], flag: 'hrsNone' };
 }
 const fits = (iv, start, dur) => iv.some(([o, c]) => o <= start && start + dur <= c);
+/* Sunset in local Riyadh time (UTC+3), minutes after midnight, for a date and a longitude/latitude (NOAA approximation, about ±3 min). */
+function sunsetMin(date, ll) {
+  const lat = (ll ? ll[0] : 24.7) * Math.PI / 180, lon = ll ? ll[1] : 46.7;
+  const n = Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 864e5);
+  const B = 2 * Math.PI / 365 * (n - 81);
+  const eot = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+  const dec = 23.44 * Math.PI / 180 * Math.sin(B);
+  const cosH = (Math.sin(-0.833 * Math.PI / 180) - Math.sin(lat) * Math.sin(dec)) / (Math.cos(lat) * Math.cos(dec));
+  const H = Math.acos(Math.max(-1, Math.min(1, cosH))) * 180 / Math.PI;
+  return Math.round(12 * 60 + (45 - lon) * 4 - eot + H * 4);
+}
+/* Places best seen at sunset (p.when === 'sunset'): arrive about 90 min before sunset so the visit covers it. */
+const sunsetArrive = (p, date, ll) => sunsetMin(date, ll || p.ll) - 90;
 
 /* ---------------- geography ---------------- */
 const CENTER = [24.7136, 46.6753]; // King Fahd Rd / Olaya — neutral start when there is no hotel
@@ -82,11 +95,13 @@ function km(a, b) {
   const x = Math.sin(dLa / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLo / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(x));
 }
-/* Rough travel time: walk when very close, otherwise drive (road factor 1.35, ~38 km/h incl. parking). */
+/* Rough travel time: walk when very close, otherwise drive (road factor 1.35, ~38 km/h incl. parking in the city;
+   beyond 25 km the rest is highway, road factor 1.25 at ~80 km/h). */
 function travelMin(d) {
   if (d == null) return 25;
   if (d < 0.8) return Math.max(5, Math.round(d / 4.5 * 60));
-  return Math.round(8 + d * 1.35 / 38 * 60);
+  const city = Math.min(d, 25), hwy = Math.max(0, d - 25);
+  return Math.round(8 + city * 1.35 / 38 * 60 + hwy * 1.25 / 80 * 60);
 }
 
 /* ---------------- costs ---------------- */
@@ -259,7 +274,8 @@ function buildPlan(D, form) {
             const dist = km(prevLL || CENTER, o.ll);
             if (dist != null && dist > 35 && ints.hits === 0) continue;          // no long day-trip without a matching interest
             const tm = prevLL ? travelMin(dist) : 0;
-            const arr = Math.max(prevEnd + tm, slot.from);
+            let arr = Math.max(prevEnd + tm, slot.from);
+            if (p.when === 'sunset') { if (slot.k !== 'act') continue; const tg = sunsetArrive(p, date, o.ll); arr = Math.max(arr, tg); if (arr > tg + 60) continue; }   // arrive 30–90 min before sunset
             if (arr > slot.to) continue;
             const dur = Math.min(p.dur || 60, slot.k === 'breakfast' ? 60 : 240);
             if (arr + dur > slot.endBy) continue;
@@ -316,6 +332,7 @@ function buildPlan(D, form) {
       if (p.cost && p.cost.opt === 'yes') fl.push('optSpend');
       if (p.bk && p.bk.rq === 'yes') fl.push('book'); else if (p.bk && p.bk.rc === 'yes') fl.push('bookRec');
       if (!o.ll) fl.push('noCoords');
+      if (p.when === 'sunset') fl.push('sunset');
       if (best.over) fl.push('over');
       if (dist != null && dist > 35) fl.push('far');
       stops.push({ id: p.id, br: o.br || null, ap: o.ap != null ? o.ap : null, slot: slot.k, sf: slot.from, t: arr, e: arr + dur, km: dist == null ? null : +dist.toFixed(1), tm, cost: ci.v, ck: ci.k, fl });
@@ -333,6 +350,7 @@ function buildPlan(D, form) {
 
 /* After a day is built: re-pick branch / access point using BOTH the previous and the next stop. */
 function refineLocations(D, stops, hotel, date, prefs) {
+  const before = stops.map(s => ({ br: s.br, ap: s.ap, fl: s.fl.slice(), t: s.t, e: s.e, km: s.km, tm: s.tm, cost: s.cost, ck: s.ck }));
   stops.forEach((s, i) => {
     const p = D.byId[s.id]; if (!p || !(p.branches || (p.aps && p.aps.length))) return;
     const prev = i ? locOf(D, stops[i - 1]) : (hotel ? hotel.ll : null);
@@ -347,6 +365,10 @@ function refineLocations(D, stops, hotel, date, prefs) {
     if (best) { s.br = best.o.br || null; s.ap = best.o.ap != null ? best.o.ap : null; const fl = s.fl.filter(x => x !== 'noCoords'); if (!best.o.ll) fl.push('noCoords'); s.fl = fl; }
   });
   retimeStops(D, stops, hotel, date);
+  /* keep the first choice if re-picking would push a later stop outside its opening hours */
+  const lateSun = s => { const p = D.byId[s.id]; return p && p.when === 'sunset' && s.t > sunsetArrive(p, date, locOf(D, s)) + 60; };
+  if (stops.some((s, i) => (s.fl.includes('closedRisk') && !before[i].fl.includes('closedRisk')) || (lateSun(s) && !(before[i].t > s.t))))
+    stops.forEach((s, i) => Object.assign(s, before[i]));
 }
 
 /* location actually used for a stop (branch / access point / place) */
@@ -366,6 +388,7 @@ function retimeStops(D, stops, hotel, date) {
     const tm = prevLL ? travelMin(dist) : 0;
     const from = s.sf != null ? s.sf : (SLOTFROM[s.slot] || 600);
     let arr = Math.max(prevEnd + tm, from);
+    if (p.when === 'sunset') arr = Math.max(arr, sunsetArrive(p, date, ll));
     const dur = Math.min(p.dur || 60, s.slot === 'breakfast' ? 60 : 240);
     const brp = s.br ? (D.byId[s.br] || {}) : null;
     const eh = effHours(p, brp ? brp.hrs : p.hrs, date, brp ? brp.hs : p.hs);
@@ -384,6 +407,7 @@ function retimeStops(D, stops, hotel, date) {
     if (p.cost && p.cost.opt === 'yes') fl.push('optSpend');
     if (p.bk && p.bk.rq === 'yes') fl.push('book'); else if (p.bk && p.bk.rc === 'yes') fl.push('bookRec');
     if (!ll) fl.push('noCoords');
+    if (p.when === 'sunset') fl.push('sunset');
     if (dist != null && dist > 35) fl.push('far');
     Object.assign(s, { t: arr, e: arr + dur, km: dist == null ? null : +dist.toFixed(1), tm, cost: ci.v, ck: ci.k, fl });
     prevEnd = arr + dur; if (ll) prevLL = ll;
@@ -418,7 +442,7 @@ function nearby(D, ll, n, maxKm, skipId) {
   return out.slice(0, n).map(([d, x]) => ({ d, x }));
 }
 
-const API = { budgetsOf, groupsOf, hoursOn, effHours, fits, km, travelMin, costAt, tierOf, budgetOf, interestScore, tierFit, buildPlan, retimePlan, retimeStops, planCost, nearby, locOf, dateOf, hm, toMin, INT, SLOTS, CENTER, isBreakfast, isMeal, restricted };
+const API = { sunsetMin, budgetsOf, groupsOf, hoursOn, effHours, fits, km, travelMin, costAt, tierOf, budgetOf, interestScore, tierFit, buildPlan, retimePlan, retimeStops, planCost, nearby, locOf, dateOf, hm, toMin, INT, SLOTS, CENTER, isBreakfast, isMeal, restricted };
 root.SAWAH_PLANNER = API;
 if (typeof module !== 'undefined' && module.exports) module.exports = API;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -122,6 +122,7 @@ for (const p of places) if (apBy[p.id]) p.aps = apBy[p.id];
 /* team notes per place (data/place_notes.csv) */
 for (const nt of placeNotes) {
   const p = places.find(x => x.id === nt.poi_id); if (!p) { (report.unresolved = report.unresolved || []).push('place_notes: ' + nt.poi_id); continue; }
+  if (nt.best_time) p.when = nt.best_time.trim();
   p.ui = {
     bk: nt.booking_label_ar || nt.booking_label_en ? [nt.booking_label_ar || nt.booking_label_en, nt.booking_label_en || nt.booking_label_ar] : null,
     ex: nt.extra_note_ar || nt.extra_note_en ? [nt.extra_note_ar || nt.extra_note_en, nt.extra_note_en || nt.extra_note_ar] : null,

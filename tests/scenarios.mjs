@@ -49,6 +49,7 @@ for (const [label, form] of Object.entries(SC)) {
       if (p.branches && !s.br) fail(label, `${p.n[1]} has no branch selected`);
       if (/magic planet/i.test(p.n[1]) && s.ck !== 'paid') fail(label, 'Magic Planet must be paid');
       if (form.group === 'family' && P.restricted(p, form, s.slot)) fail(label, `${p.n[1]} restricted for families`);
+      if (p.when === 'sunset') { const ss = P.sunsetMin(date, P.locOf(D, s)); if (s.t < ss - 120 || s.t > ss - 15) fail(label, `${p.n[1]} not timed for sunset (${P.hm(s.t)}, sunset ${P.hm(ss)})`); }
     }
     console.log(`     day travel ≈ ${dayKm.toFixed(1)} km`);
     if (Number.isFinite(c.cap) && c.perDay[d] > c.cap) fail(label, `day ${d + 1} is over the budget`);
