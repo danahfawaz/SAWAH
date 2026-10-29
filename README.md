@@ -28,7 +28,7 @@ Needs Node 18+. No npm dependencies.
 |---|---|
 | `sawah_main_places_FINAL_v1.10.csv` | Explore (main discovery), place details, personalised ranking |
 | `sawah_itinerary_eligible_FINAL_v1.10.csv` | If present, decides which places can be scheduled. If absent, the `itinerary_eligible` column of the main file is used (same 79 records) |
-| `sawah_map_places_FINAL_v1.10.csv` | Map + "Nearby" (1,633 supporting places). Never scheduled as stops |
+| `sawah_map_places_FINAL_v1.10.csv` | Map + "Nearby" (1,632 supporting places). Never scheduled as stops |
 | `sawah_branch_locations_FINAL_v1.10.csv` | Branch coordinates, hours, booking per branch |
 | `sawah_access_points_FINAL_v1.10.csv` | Access points for linear places (Sports Boulevard, Wadi Hanifa, Wadi Namar, Red Sands) |
 | `sawah_hotels_FINAL_v1.10.csv` | Hotel anchors (tier: budget / mid-range / luxury) |
