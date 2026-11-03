@@ -36,18 +36,38 @@ The Riyadh tourism dataset prepared by the SAWAH team for **SAWAH – Smart Tour
 | Quality | `data_status`, `missing_fields`, `last_verified` |
 | Source | `source_names`, `source_urls`, `license_status` |
 
-Unknown values are marked as unknown, never guessed. Every place keeps its source and verification date.
+Unknown values are marked as unknown, never guessed. Every place keeps its source and verification date in its own row.
 
-## Sources and licenses
+## What we took from other sources
 
-| Source | License |
+| Source | License | What we took |
+|---|---|---|
+| OpenStreetMap — © OpenStreetMap contributors | ODbL 1.0 | Base list of places (1,928 of 1,977), coordinates, many Arabic/English names, categories, addresses and districts. Used for 45 of the 85 main destinations |
+| Wikidata | CC0 | Wikidata IDs, some names, short descriptions and official websites (126 places) |
+| Audiala Places — Data by Audiala (audiala.com) | CC BY 4.0 | Wikidata IDs, English names and a few extra places (20 places) |
+| Official websites and guides (e.g. Visit Saudi, MICHELIN Guide, venue websites) | Their own terms | Facts only, checked by hand (names, opening hours, prices, addresses); no text copied |
+| Public business listings (e.g. Restaurant Guru, Yandex Maps) | Their own terms | A few facts checked by hand for single places; no bulk download |
+
+No data was downloaded or stored in bulk from Google Maps / Google Places.
+
+## What the SAWAH team collected by hand
+
+| Work | Details |
 |---|---|
-| OpenStreetMap | ODbL 1.0 — © OpenStreetMap contributors |
-| Audiala Places | CC BY 4.0 — Data by Audiala (audiala.com) |
-| Wikidata | CC0 |
-| Official websites (e.g. Visit Saudi) | Facts checked by hand; no text copied |
+| Selection of main destinations | The 85 main destinations were chosen and researched by the team; 40 of them do not come from OpenStreetMap at all |
+| Opening hours and prices | Collected by the team from official pages, menus and venue information for the main destinations (none taken from OpenStreetMap) |
+| Descriptions | Short English summaries written by the team from checked facts, with Arabic versions |
+| Planning fields | Visit duration rules, categories, interest tags, budget tiers, hotel tiers, booking notes and planner notes |
+| Locations | Branch locations, entry points for long places (e.g. Wadi Hanifa) and coordinate fixes |
+| Quality work | Removing duplicates, marking unknown values, and checking every main destination by hand |
 
-Google Maps / Google Places content is not stored in this dataset. Because the dataset is built from OpenStreetMap, it is shared under the ODbL with the attributions above.
+## Copyright and use
+
+© 2026 SAWAH team. All rights reserved.
+
+The selection of main destinations, the data collected by hand, the added fields, the descriptions and the notes in this dataset are the work of the SAWAH team. This dataset is shared only for the academic evaluation of the SAWAH graduation project. It may not be copied, shared, published or used, in whole or in part, without written permission from the SAWAH team.
+
+Data from the sources above remains under their own licenses: OpenStreetMap data under the ODbL 1.0 (© OpenStreetMap contributors, openstreetmap.org/copyright), Audiala data under CC BY 4.0, and Wikidata under CC0.
 
 ## Concept preview
 
