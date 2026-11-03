@@ -12,7 +12,7 @@ The Riyadh tourism dataset prepared by the SAWAH team for **SAWAH – Smart Tour
 | Main destinations (curated for trip planning) | 85, in 19 categories |
 | Map and nearby places (restaurants, cafés, services, transport) | 1,716 |
 | Hotels | 9 |
-| Coverage | Riyadh and Ad Diriyah governorates, plus selected day-trip destinations in the Riyadh Region |
+| Coverage | Riyadh and Diriyah governorates, plus selected day-trip destinations in the Riyadh Region |
 
 ## Files (`data/`)
 
