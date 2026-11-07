@@ -316,6 +316,8 @@ textarea.tinput{height:96px;padding-block:10px;resize:vertical}
 .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,460px);z-index:25;background:var(--bg);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px))}
 .tabbar button{flex:1;display:grid;place-items:center;color:var(--muted);border-radius:14px;position:relative}
 .tabbar button svg.ic{width:27px;height:27px}
+.tabimg{display:block;width:40px;height:29px;background:currentColor;-webkit-mask:url("data:image/png;base64,__IMG_guideTab__") center/contain no-repeat;mask:url("data:image/png;base64,__IMG_guideTab__") center/contain no-repeat}
+.navtabs .tabimg{width:28px;height:21px}
 .tabbar button[aria-current="page"]{color:var(--fg)}
 .tabbar button[aria-current="page"] svg.ic{stroke-width:2.3}
 .tabbar button[aria-current="page"]::after{content:"";position:absolute;bottom:3px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
@@ -801,13 +803,13 @@ const T={
 
 /* ---------- state ---------- */
 
-Object.assign(T.ar,{gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا والله 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nقل لنا وش ودك تسوي في الرياض، ونرتب لك خطة تناسب وقتك وميزانيتك.',
+Object.assign(T.ar,{gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا ومرحبا 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nسواح يرتب لك رحلتك في الرياض على كيفك: قل لنا كم يوم، ومين معك، وميزانيتك، ووش تحب، ونبني لك جدول يومي بأماكن تناسبك.',
   gPh:'اكتب لنا وش ودك…',gSend:'إرسال',gNew:'محادثة جديدة',gSumT:'ملخص رحلتك',gGo:'أكد الخطة',gEditHint:'تبي تغير شي؟ قل لنا هنا في المحادثة.',
   gErr:'المعذرة، ما نقدر نرد الحين. جرب بعد شوي.',gRetry:'حاول مرة ثانية',gBusy:'احنا مشغولين شوي، جرب بعد دقيقة.',gNoKey:'نحتاج إعداد مفتاح الذكاء الاصطناعي في Vercel عشان نقدر نرد.',
   gAfter:'تم! تبي تغير شي في الخطة؟ قل لنا وش ودك.',gDays:'المدة',gWho:'مين معك',gBud:'الميزانية',gInt:'الاهتمامات',gStart:'البداية',gStay:'الفندق',gMore:'أشياء تحبها',
   gStayY:'نحتاج فندق',gStayN:'ما نحتاج',modern:'الرياض الحديثة',
   gChips:[['cal','يومين مع العائلة','يومين مع العائلة'],['heritage','أبي أماكن تراثية','أبي أماكن تراثية'],['lunch','طلعة مع الأصحاب','طلعة مع الأصحاب'],['wallet','ميزانيتي محدودة','ميزانيتي محدودة'],['spark','وش تقترحون علي؟','وش تقترحون علي؟']]});
-Object.assign(T.en,{gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala 👋\nWe are Noura and Mohammed, your SAWAH guides.\nTell us what you would like to do in Riyadh and we will plan a trip that fits your time and budget.',
+Object.assign(T.en,{gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala, welcome 👋\nWe are Noura and Mohammed, your SAWAH guides.\nSAWAH plans your Riyadh trip your way: tell us how many days, who is coming, your budget and what you enjoy, and we will build a day-by-day plan with places that suit you.',
   gPh:'Tell us what you would like…',gSend:'Send',gNew:'New chat',gSumT:'Your trip',gGo:'Confirm my plan',gEditHint:'Want to change something? Just tell us in the chat.',
   gErr:'Sorry, we cannot reply right now. Please try again soon.',gRetry:'Try again',gBusy:'We are a bit busy. Please try again in a minute.',gNoKey:'The AI key must be set in Vercel before we can reply.',
   gAfter:'Done! Want to change anything in the plan? Just tell us.',gDays:'Length',gWho:'Who is going',gBud:'Budget',gInt:'Interests',gStart:'Start',gStay:'Hotel',gMore:'Also likes',
@@ -815,7 +817,7 @@ Object.assign(T.en,{gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online'
   gChips:[['cal','Two days with family','Two days with family'],['heritage','Heritage places','I want heritage places'],['lunch','Out with friends','A day out with friends'],['wallet','Small budget','My budget is small'],['spark','What do you suggest?','What do you suggest?']]});
 const tomorrowISO=()=>{const d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const BASEFORM=()=>({city:'riyadh',start:tomorrowISO(),days:2,people:2,group:'family',budget:'mid',amount:300,stay:true,groups:['family'],budgets:['mid'],meals:['breakfast','lunch','dinner'],interests:[],other:''});
-const S={lang:'ar',theme:'light',tab:'explore',q:'',cat:'all',price:'all',
+const S={lang:'ar',theme:'light',tab:'plan',q:'',cat:'all',price:'all',
   step:1,form:BASEFORM(),planView:'form',current:null,openDays:{0:true},
   saved:[],favs:[],reviews:{},acctTab:'passport',detail:null,prefs:null,mapRoute:null};
 const KEY='sawah-riyadh-v1';
@@ -1026,7 +1028,7 @@ function render(){
   if(S.tab==='map'&&!S.detail) attachMap();
 }
 function renderTabbar(){
-  document.getElementById('tabbar').innerHTML=`<button class="navbrand" data-act="tab" data-v="explore" aria-label="${t('explore')}">${brandHTML()}</button><div class="navtabs">`+[['explore','explore'],['map','plan'],['plan','route'],['account','user']].map(([k,i])=>`<button data-act="tab" data-v="${k}" aria-label="${t(k)}" title="${t(k)}" ${S.tab===k?'aria-current="page"':''}>${ic(i)}<span class="tl">${t(k)}</span></button>`).join('')+'</div>';
+  document.getElementById('tabbar').innerHTML=`<button class="navbrand" data-act="tab" data-v="explore" aria-label="${t('explore')}">${brandHTML()}</button><div class="navtabs">`+[['explore','explore'],['map','plan'],['plan','route'],['account','user']].map(([k,i])=>`<button data-act="tab" data-v="${k}" aria-label="${t(k)}" title="${t(k)}" ${S.tab===k?'aria-current="page"':''}>${k==='plan'?'<span class="tabimg" aria-hidden="true"></span>':ic(i)}<span class="tl">${t(k)}</span></button>`).join('')+'</div>';
 }
 function placeCard(p){
   const fav=S.favs.includes(p.id), a=avg(p.id);
