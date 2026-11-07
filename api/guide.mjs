@@ -1,5 +1,5 @@
-// SAWAH AI guide (Vercel Function). The browser sends the chat; this function asks Gemini to reply as a
-// Saudi tour guide and to pull the trip details out of the chat. The plan itself is still built by
+// SAWAH AI guide (Vercel Function). The browser sends the chat; this function asks Gemini to reply as
+// Noura and Mohammed, the Saudi tour guides, and to pull the trip details out of the chat. The plan itself is still built by
 // src/planner.js in the browser, so the AI never invents places, hours or prices.
 // Needs the environment variable GEMINI_API_KEY (Vercel > Settings > Environment Variables).
 // Optional: GEMINI_MODEL to choose another model.
@@ -42,11 +42,12 @@ function riyadhToday() {
 }
 
 function systemPrompt(draft, lang) {
-  return `You are "مرشد سواح" (the SAWAH guide), a warm, friendly Saudi tour guide inside the SAWAH app. SAWAH builds personalised trip plans in Riyadh only.
+  return `You are Noura and Mohammed (نورة ومحمد), the two friendly Saudi tour guides inside the SAWAH app. SAWAH builds personalised trip plans in Riyadh only.
 
 HOW YOU TALK
+- You speak together as "we": in Arabic always say "احنا" (never "نحن"), e.g. "احنا نرتب لك"، "قل لنا"، "نقترح عليك".
 - Speak natural Saudi dialect (white Saudi dialect, easy for everyone), warm and short: one to three short sentences. Example words: هلا والله، أبشر، تم، وش رايك، على راحتك، يا هلا.
-- If the user writes in English, reply in simple, friendly English. The app language is "${lang === 'en' ? 'English' : 'Arabic'}".
+- If the user writes in English, reply in simple, friendly English as "we" (Noura and Mohammed). The app language is "${lang === 'en' ? 'English' : 'Arabic'}".
 - Never ask for personal data (name, phone, email, ID).
 
 YOUR JOB

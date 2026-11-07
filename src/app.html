@@ -505,6 +505,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .bub{max-width:86%;padding:10px 14px;border-radius:18px;line-height:1.65;font-size:15px;overflow-wrap:anywhere}
 .bub.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-start-start-radius:6px}
 .bub.u{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-start-end-radius:6px}
+.ghi{font-size:16.5px}
 .bub.err{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
 .bub.err .btn{margin-top:8px}
 .typing{display:inline-flex;gap:5px;padding:14px 16px}
@@ -512,8 +513,11 @@ html,body{max-width:100%;overflow-x:hidden}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes gdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
 @media (prefers-reduced-motion:reduce){.typing i{animation:none;opacity:.6}}
-.gchips{display:flex;flex-wrap:wrap;gap:8px;max-width:100%}
-.gchip{padding:8px 14px;border-radius:999px;background:var(--accent-soft);font-weight:600;font-size:14px;line-height:1.4;text-align:start}
+.gchips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.gchip{display:flex;align-items:center;gap:8px;min-height:46px;padding:8px 14px;border-radius:999px;background:var(--accent-soft);font-weight:600;font-size:14px;line-height:1.35;text-align:start}
+.gchip svg.ic{width:20px;height:20px;color:var(--accent)}
+.gchip:last-child:nth-child(odd){grid-column:1/-1;justify-self:start;padding-inline-end:22px}
+.gtop .brand .bword{padding-inline-start:12px;border-inline-start:2px solid var(--line)}
 .gsum{align-self:stretch;background:var(--surface);border:1.5px dashed color-mix(in srgb,var(--accent) 55%,var(--line));border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .gsum h3{margin:0 0 2px;font-family:var(--f-display);font-size:16px}
 .gsr{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px}
@@ -797,18 +801,18 @@ const T={
 
 /* ---------- state ---------- */
 
-Object.assign(T.ar,{gTitle:'مرشدك في سواح',gSub:'متصل · يسولف معك بلهجتنا',gHi:'هلا والله! 👋 أنا مرشدك في سواح.\nقل لي وش ودك تسوي في الرياض، وأنا أرتب لك رحلتك.',
-  gPh:'اكتب لي وش ودك…',gSend:'إرسال',gNew:'محادثة جديدة',gSumT:'ملخص رحلتك',gGo:'أكد الخطة',gEditHint:'تبي تغير شي؟ قله لي هنا في المحادثة.',
-  gErr:'المعذرة، المرشد مو متاح الحين. جرب بعد شوي.',gRetry:'حاول مرة ثانية',gBusy:'المرشد مشغول شوي، جرب بعد دقيقة.',gNoKey:'المرشد يحتاج إعداد مفتاح الذكاء الاصطناعي في Vercel.',
-  gAfter:'تم! تبي تغير شي في الخطة؟ قل لي وش ودك.',gDays:'المدة',gWho:'مين معك',gBud:'الميزانية',gInt:'الاهتمامات',gStart:'البداية',gStay:'الفندق',gMore:'أشياء تحبها',
+Object.assign(T.ar,{gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا والله 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nقل لنا وش ودك تسوي في الرياض، ونرتب لك خطة تناسب وقتك وميزانيتك.',
+  gPh:'اكتب لنا وش ودك…',gSend:'إرسال',gNew:'محادثة جديدة',gSumT:'ملخص رحلتك',gGo:'أكد الخطة',gEditHint:'تبي تغير شي؟ قل لنا هنا في المحادثة.',
+  gErr:'المعذرة، ما نقدر نرد الحين. جرب بعد شوي.',gRetry:'حاول مرة ثانية',gBusy:'احنا مشغولين شوي، جرب بعد دقيقة.',gNoKey:'نحتاج إعداد مفتاح الذكاء الاصطناعي في Vercel عشان نقدر نرد.',
+  gAfter:'تم! تبي تغير شي في الخطة؟ قل لنا وش ودك.',gDays:'المدة',gWho:'مين معك',gBud:'الميزانية',gInt:'الاهتمامات',gStart:'البداية',gStay:'الفندق',gMore:'أشياء تحبها',
   gStayY:'نحتاج فندق',gStayN:'ما نحتاج',modern:'الرياض الحديثة',
-  gChips:['يومين مع العايلة نحب التراث','طلعة مع الربع، أكل وترفيه','ميزانيتي على قدي','وش تقترح علي؟']});
-Object.assign(T.en,{gTitle:'Your SAWAH guide',gSub:'Online · happy to help',gHi:'Hala! 👋 I am your SAWAH guide.\nTell me what you would like to do in Riyadh and I will plan your trip.',
-  gPh:'Tell me what you would like…',gSend:'Send',gNew:'New chat',gSumT:'Your trip',gGo:'Confirm my plan',gEditHint:'Want to change something? Just tell me in the chat.',
-  gErr:'Sorry, the guide is not available right now. Please try again soon.',gRetry:'Try again',gBusy:'The guide is busy. Please try again in a minute.',gNoKey:'The guide needs its AI key to be set in Vercel.',
-  gAfter:'Done! Want to change anything in the plan? Just tell me.',gDays:'Length',gWho:'Who is going',gBud:'Budget',gInt:'Interests',gStart:'Start',gStay:'Hotel',gMore:'Also likes',
+  gChips:[['cal','يومين مع العائلة','يومين مع العائلة'],['heritage','أبي أماكن تراثية','أبي أماكن تراثية'],['lunch','طلعة مع الأصحاب','طلعة مع الأصحاب'],['wallet','ميزانيتي محدودة','ميزانيتي محدودة'],['spark','وش تقترحون علي؟','وش تقترحون علي؟']]});
+Object.assign(T.en,{gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala 👋\nWe are Noura and Mohammed, your SAWAH guides.\nTell us what you would like to do in Riyadh and we will plan a trip that fits your time and budget.',
+  gPh:'Tell us what you would like…',gSend:'Send',gNew:'New chat',gSumT:'Your trip',gGo:'Confirm my plan',gEditHint:'Want to change something? Just tell us in the chat.',
+  gErr:'Sorry, we cannot reply right now. Please try again soon.',gRetry:'Try again',gBusy:'We are a bit busy. Please try again in a minute.',gNoKey:'The AI key must be set in Vercel before we can reply.',
+  gAfter:'Done! Want to change anything in the plan? Just tell us.',gDays:'Length',gWho:'Who is going',gBud:'Budget',gInt:'Interests',gStart:'Start',gStay:'Hotel',gMore:'Also likes',
   gStayY:'Needs a hotel',gStayN:'No hotel',modern:'Modern Riyadh',
-  gChips:['Two days with family, we love heritage','A day out with friends: food and fun','Something on a small budget','What do you suggest?']});
+  gChips:[['cal','Two days with family','Two days with family'],['heritage','Heritage places','I want heritage places'],['lunch','Out with friends','A day out with friends'],['wallet','Small budget','My budget is small'],['spark','What do you suggest?','What do you suggest?']]});
 const tomorrowISO=()=>{const d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const BASEFORM=()=>({city:'riyadh',start:tomorrowISO(),days:2,people:2,group:'family',budget:'mid',amount:300,stay:true,groups:['family'],budgets:['mid'],meals:['breakfast','lunch','dinner'],interests:[],other:''});
 const S={lang:'ar',theme:'light',tab:'explore',q:'',cat:'all',price:'all',
@@ -1085,9 +1089,7 @@ const GUIDE_SVG=`<svg class="gav" viewBox="0 0 132 84" role="img" aria-label="">
 <path d="M14 86c2-17 14-24 30-24s28 7 30 24z" fill="#FBF8F2" stroke="#D9CFC2" stroke-width="1"/>
 <path d="M40 62l4 9 4-9" fill="none" stroke="#D9CFC2" stroke-width="1.2"/>
 <circle cx="44" cy="41" r="13" fill="#C98F64"/>
-<path d="M32 45.5c1 9 6 13.5 12 13.5s11-4.5 12-13.5c-3 4.5-7 6-12 6s-9-1.5-12-6z" fill="#2E211A"/>
-<path d="M39.5 49c2-1.4 3.2-1.4 4.5 0 1.3-1.4 2.5-1.4 4.5 0" fill="none" stroke="#2E211A" stroke-width="2" stroke-linecap="round"/>
-<path d="M41.5 52.5c1.8 1.2 3.2 1.2 5 0" fill="none" stroke="#F3DCCB" stroke-width="1.3" stroke-linecap="round"/>
+<path d="M40.5 47.5c2 1.8 5 1.8 7 0" fill="none" stroke="#8E4A3A" stroke-width="1.6" stroke-linecap="round"/><circle cx="36.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/><circle cx="51.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/>
 <path d="M37.5 41q2-2 4 0M46.5 41q2-2 4 0" fill="none" stroke="#2E211A" stroke-width="1.6" stroke-linecap="round"/>
 <path d="M28.5 46C27 27 34 19 44 19s17 8 15.5 27l7 24c-7-4-9.5-11-10-22 0-10-5-16-12.5-16S31.5 38 31.5 48c-.5 11-3 18-10 22z" fill="url(#shm)" stroke="#A9382F" stroke-width=".8"/>
 <ellipse cx="44" cy="23" rx="13" ry="3" fill="none" stroke="#1E1714" stroke-width="1.9"/>
@@ -1101,7 +1103,7 @@ const GUIDE_SVG=`<svg class="gav" viewBox="0 0 132 84" role="img" aria-label="">
 <circle cx="82.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/><circle cx="97.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/>
 <path d="M74 47c-2-20 6-28.5 16-28.5S108 27 106 47c0 11 4 17 9 21-11-1-15-8-15.5-18C99.5 40 95.5 33.5 90 33.5S80.5 40 80.5 50C80 60 76 67 65 68c5-4 9-10 9-21z" fill="#2A2220"/>
 <path d="M80.5 50C80.5 40 84.5 33.5 90 33.5S99.5 40 99.5 50" fill="none" stroke="#D9A23A" stroke-width="1.4" stroke-dasharray="2 2.2"/><path d="M78 24c4-3 8-4.5 12-4.5s8 1.5 12 4.5" fill="none" stroke="#4A3C36" stroke-width="1.2" stroke-linecap="round"/>
-</g></svg>`;
+</g><g stroke="#D9A23A" stroke-width="2" stroke-linecap="round"><path d="M114 14l3-6M119 20l6-3M108 11l-.5-6"/></g></svg>`;
 const G={msgs:[],draft:{},busy:false,err:null,input:''};
 function gReset(){G.msgs=[{r:'a',k:'gHi'}];G.draft={};G.busy=false;G.err=null;G.input=''}
 gReset();
@@ -1144,12 +1146,12 @@ function gSummary(){
 }
 function renderGuide(savedBtn){
   const ready=!gMissing(G.draft).length, onlyHi=G.msgs.length===1;
-  const bubbles=G.msgs.map(m=>`<div class="bub ${m.r}">${esc(gText(m)).replace(/\n/g,'<br>')}</div>`).join('');
-  return `<header class="top"><div class="toprow">${brandHTML()}<span style="display:flex;gap:8px;align-items:center">
+  const bubbles=G.msgs.map(m=>{let h=esc(gText(m)).replace(/\n/g,'<br>');if(m.k==='gHi')h=h.replace(/^(.*?)<br>/,'<b class="ghi">$1</b><br>');return `<div class="bub ${m.r}">${h}</div>`}).join('');
+  return `<header class="top gtop"><div class="toprow">${brandHTML()}<span style="display:flex;gap:8px;align-items:center">
       ${onlyHi?'':`<button class="iconbtn" data-act="gNew" aria-label="${t('gNew')}" title="${t('gNew')}">${ic('plus')}</button>`}${savedBtn}</span></div>
     <div class="guidebar">${GUIDE_SVG}<div class="gtx"><span class="gt">${t('gTitle')}</span><span class="gs"><i></i>${t('gSub')}</span></div></div></header>
   <div class="chat" id="chat" aria-live="polite">${bubbles}
-    ${onlyHi?`<div class="gchips">${t('gChips').map(c=>`<button class="gchip" data-act="gChip" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:''}
+    ${onlyHi?`<div class="gchips">${t('gChips').map(([i,c,s])=>`<button class="gchip" data-act="gChip" data-v="${esc(s)}">${ic(i)}<span>${esc(c)}</span></button>`).join('')}</div>`:''}
     ${G.busy?`<div class="bub a typing" aria-label="…"><i></i><i></i><i></i></div>`:''}
     ${G.err?`<div class="bub a err">${t(G.err)}${G.err==='gNoKey'?'':`<br><button class="btn sm" data-act="gRetry">${ic('reset')}${t('gRetry')}</button>`}</div>`:''}
     ${ready&&!G.busy&&!G.err&&!onlyHi?gSummary():''}
