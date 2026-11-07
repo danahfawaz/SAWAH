@@ -575,6 +575,25 @@ html,body{max-width:100%;overflow-x:hidden}
 #ar .aredge svg.ic{width:26px;height:26px}
 #ar .aredge.l{left:10px} #ar .aredge.r{right:10px}
 .btnrow{display:flex;gap:8px}.btnrow .btn{flex:1}
+
+/* AR guide: Noura and Mohammed in the camera */
+#ar .agwrap{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;padding:0 16px calc(env(safe-area-inset-bottom,0px) + 14px);gap:10px}
+#ar .agbub{position:relative;max-width:430px;width:100%;background:rgba(255,252,246,.96);color:#3B3129;border-radius:22px;padding:14px 16px 12px;box-shadow:0 10px 28px rgba(0,0,0,.35);text-align:start;font-size:16.5px;line-height:1.7;animation:agpop .35s ease both;cursor:pointer}
+#ar .agbub::after{content:"";position:absolute;bottom:-9px;left:var(--tail,40%);width:18px;height:18px;background:inherit;transform:rotate(45deg);border-radius:3px}
+#ar .agbub .who{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:13px;color:#fff;background:var(--accent);border-radius:999px;padding:1px 10px;margin-bottom:4px}
+#ar .agbub .dots{display:flex;gap:5px;justify-content:center;margin-top:8px}
+#ar .agbub .dots i{width:6px;height:6px;border-radius:50%;background:#D8CBBB}
+#ar .agbub .dots i.on{background:var(--accent);width:16px;border-radius:3px}
+#ar .agchars{width:min(62vw,270px);height:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));animation:agin .7s cubic-bezier(.2,1.4,.4,1) both;transform-origin:50% 100%}
+#ar .agchars.talk{animation:agin .7s cubic-bezier(.2,1.4,.4,1) both,agtalk .5s ease-in-out .7s infinite alternate}
+#ar .agbtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;max-width:430px}
+#ar .agbtns .arbtn{flex:1 1 140px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#ar .agnote{font-size:12.5px;opacity:.85;text-align:center}
+@keyframes agin{from{transform:translateY(110%) scale(.9);opacity:0}to{transform:none;opacity:1}}
+@keyframes agtalk{from{transform:translateY(0) rotate(-.6deg)}to{transform:translateY(-6px) rotate(.6deg)}}
+@keyframes agpop{from{transform:translateY(8px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){#ar .agchars,#ar .agchars.talk,#ar .agbub{animation:none}}
+#sheet .agsheet{width:100%;margin-top:8px}
 </style>
 <style>[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -646,6 +665,8 @@ const P={
   mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7l8 6 8-6"/>',
   wa:'<path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/><path d="M9.3 8.6c.3-.6.7-.6 1-.5l.6 1.4c.1.3 0 .5-.2.7l-.4.5c.5 1 1.3 1.8 2.3 2.3l.5-.4c.2-.2.4-.3.7-.2l1.4.6c.1.3.1.7-.5 1-1.6.9-5.8-2.2-5.4-4.9z"/>',
   pass:'<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M8.5 17h7"/>',
+  sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  mute:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>',
   camera:'<path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H7l1.6-2.2h6.8L17 6h1.5A2.5 2.5 0 0 1 21 8.5v9A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.8"/>',
   arrowUp:'<path d="M12 3l7 9h-4.5v9h-5v-9H5z" fill="currentColor" stroke="none"/>',
   locate:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
@@ -847,13 +868,13 @@ const T={
 
 /* ---------- state ---------- */
 
-Object.assign(T.ar,{arTitle:'استكشف بالكاميرا',arTo:'دلني بالكاميرا',arNear:'أماكن سواح القريبة منك',arAcc:n=>`دقة موقعك ±${n} م`,arWait:'نحدد موقعك…',arNoCam:'ما قدرنا نفتح الكاميرا. تقدر تستخدم الأسهم بدونها.',arNoLoc:'نحتاج إذن الموقع عشان نعرف وش قريب منك.',arNoCompass:'البوصلة مو متاحة في هالجهاز. جرّبها من الجوال.',arCalib:'حرّك جوالك على شكل رقم 8 إذا كانت الاتجاهات مو دقيقة.',arFar:'موقعك برا الرياض، فما فيه أماكن قريبة منك.',arDemo:'جرب بموقع تجريبي في الرياض',arDemoOn:'موقع تجريبي: برج المملكة',arNone:'ما فيه أماكن من سواح في حدود 3 كم منك.',arArrive:'وصلت تقريباً 🎉',arStart:'ابدأ',arIntro:'وجّه كاميرا جوالك حولك، وبتطلع لك أماكن سواح القريبة واتجاهها.',arTurn:'لف جوالك',mapFail:'ما قدرنا نحمّل الخريطة. تأكد من الإنترنت وجرب مرة ثانية.',gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا ومرحبا 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nبس عطنا كم يوم بتجلس، ومين معك، وميزانيتك، ووش تحب، ونبني لك احلا جدول يومي بأماكن تناسبك.',
+Object.assign(T.ar,{agBtn:'خل نورة ومحمد يعرفونك عليه',agHere:n=>`وصلت ${n}! خل نورة ومحمد يعرفونك عليه`,agNoura:'نورة',agMohammed:'محمد',agNear:'وش القريب من هنا؟',agGuide:'دلني عليه',agAgain:'عيدوا',agDone:'تم',agTap:'اضغط على الكلام عشان تكمل',agNoVoice:'ما فيه صوت عربي في جهازك، فبنعرض الكلام مكتوب.',arTitle:'استكشف بالكاميرا',arTo:'دلني بالكاميرا',arNear:'أماكن سواح القريبة منك',arAcc:n=>`دقة موقعك ±${n} م`,arWait:'نحدد موقعك…',arNoCam:'ما قدرنا نفتح الكاميرا. تقدر تستخدم الأسهم بدونها.',arNoLoc:'نحتاج إذن الموقع عشان نعرف وش قريب منك.',arNoCompass:'البوصلة مو متاحة في هالجهاز. جرّبها من الجوال.',arCalib:'حرّك جوالك على شكل رقم 8 إذا كانت الاتجاهات مو دقيقة.',arFar:'موقعك برا الرياض، فما فيه أماكن قريبة منك.',arDemo:'جرب بموقع تجريبي في الرياض',arDemoOn:'موقع تجريبي: برج المملكة',arNone:'ما فيه أماكن من سواح في حدود 3 كم منك.',arArrive:'وصلت تقريباً 🎉',arStart:'ابدأ',arIntro:'وجّه كاميرا جوالك حولك، وبتطلع لك أماكن سواح القريبة واتجاهها.',arTurn:'لف جوالك',mapFail:'ما قدرنا نحمّل الخريطة. تأكد من الإنترنت وجرب مرة ثانية.',gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا ومرحبا 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nبس عطنا كم يوم بتجلس، ومين معك، وميزانيتك، ووش تحب، ونبني لك احلا جدول يومي بأماكن تناسبك.',
   gPh:'اكتب لنا وش ودك…',gSend:'إرسال',gNew:'محادثة جديدة',gSumT:'ملخص رحلتك',gGo:'أكد الخطة',gEditHint:'تبي تغير شي؟ قل لنا هنا في المحادثة.',
   gErr:'المعذرة، ما نقدر نرد الحين. جرب بعد شوي.',gRetry:'حاول مرة ثانية',gBusy:'احنا مشغولين شوي، جرب بعد دقيقة.',gNoKey:'نحتاج إعداد مفتاح الذكاء الاصطناعي في Vercel عشان نقدر نرد.',
   gAfter:'تم! تبي تغير شي في الخطة؟ قل لنا وش ودك.',gDays:'المدة',gWho:'مين معك',gBud:'الميزانية',gInt:'الاهتمامات',gStart:'البداية',gStay:'الفندق',gMore:'أشياء تحبها',
   gStayY:'نحتاج فندق',gStayN:'ما نحتاج',modern:'الرياض الحديثة',
   gChips:[['cal','يومين مع العائلة','يومين مع العائلة'],['heritage','أبي أماكن تراثية','أبي أماكن تراثية'],['lunch','طلعة مع الأصحاب','طلعة مع الأصحاب'],['wallet','ميزانيتي محدودة','ميزانيتي محدودة'],['spark','وش تقترحون علي؟','وش تقترحون علي؟']]});
-Object.assign(T.en,{arTitle:'Explore with camera',arTo:'Guide me with camera',arNear:'SAWAH places near you',arAcc:n=>`Location accuracy ±${n} m`,arWait:'Finding your location…',arNoCam:'The camera could not open. The arrows still work without it.',arNoLoc:'We need location access to know what is near you.',arNoCompass:'The compass is not available on this device. Try it on your phone.',arCalib:'Move your phone in a figure 8 if the directions look wrong.',arFar:'You are outside Riyadh, so there are no places near you.',arDemo:'Try with a demo location in Riyadh',arDemoOn:'Demo location: Kingdom Centre',arNone:'No SAWAH places within 3 km of you.',arArrive:'You are almost there 🎉',arStart:'Start',arIntro:'Point your phone camera around you to see nearby SAWAH places and their direction.',arTurn:'Turn your phone',mapFail:'The map could not load. Check your connection and try again.',gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala, welcome 👋\nWe are Noura and Mohammed, your SAWAH guides.\nSAWAH plans your Riyadh trip your way: tell us how many days, who is coming, your budget and what you enjoy, and we will build a day-by-day plan with places that suit you.',
+Object.assign(T.en,{agBtn:'Let Noura and Mohammed show you',agHere:n=>`You are at ${n}! Let Noura and Mohammed show you around`,agNoura:'Noura',agMohammed:'Mohammed',agNear:'What is near here?',agGuide:'Guide me there',agAgain:'Again',agDone:'Done',agTap:'Tap the bubble to continue',agNoVoice:'No voice for this language on your device, so the words are shown only.',arTitle:'Explore with camera',arTo:'Guide me with camera',arNear:'SAWAH places near you',arAcc:n=>`Location accuracy ±${n} m`,arWait:'Finding your location…',arNoCam:'The camera could not open. The arrows still work without it.',arNoLoc:'We need location access to know what is near you.',arNoCompass:'The compass is not available on this device. Try it on your phone.',arCalib:'Move your phone in a figure 8 if the directions look wrong.',arFar:'You are outside Riyadh, so there are no places near you.',arDemo:'Try with a demo location in Riyadh',arDemoOn:'Demo location: Kingdom Centre',arNone:'No SAWAH places within 3 km of you.',arArrive:'You are almost there 🎉',arStart:'Start',arIntro:'Point your phone camera around you to see nearby SAWAH places and their direction.',arTurn:'Turn your phone',mapFail:'The map could not load. Check your connection and try again.',gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala, welcome 👋\nWe are Noura and Mohammed, your SAWAH guides.\nSAWAH plans your Riyadh trip your way: tell us how many days, who is coming, your budget and what you enjoy, and we will build a day-by-day plan with places that suit you.',
   gPh:'Tell us what you would like…',gSend:'Send',gNew:'New chat',gSumT:'Your trip',gGo:'Confirm my plan',gEditHint:'Want to change something? Just tell us in the chat.',
   gErr:'Sorry, we cannot reply right now. Please try again soon.',gRetry:'Try again',gBusy:'We are a bit busy. Please try again in a minute.',gNoKey:'The AI key must be set in Vercel before we can reply.',
   gAfter:'Done! Want to change anything in the plan? Just tell us.',gDays:'Length',gWho:'Who is going',gBud:'Budget',gInt:'Interests',gStart:'Start',gStay:'Hotel',gMore:'Also likes',
@@ -1090,7 +1111,7 @@ function arOpen(target){
   document.body.style.overflow='hidden';
 }
 function arClose(){
-  AR.on=false;cancelAnimationFrame(AR.raf);
+  AR.on=false;cancelAnimationFrame(AR.raf);if(typeof AG!=='undefined'&&AG.on){AG.on=false;clearTimeout(AG.timer);try{speechSynthesis.cancel()}catch(e){}}
   if(AR.stream){AR.stream.getTracks().forEach(tr=>tr.stop());AR.stream=null}
   if(AR.watch!=null&&navigator.geolocation)navigator.geolocation.clearWatch(AR.watch);AR.watch=null;
   removeEventListener('deviceorientationabsolute',arOrient,true);removeEventListener('deviceorientation',arOrient,true);
@@ -1141,6 +1162,7 @@ function arLoop(){
   else if(AR.head==null){msg=t('arNoCompass')+(AR.demo?'':'')}
   else if(tgt&&tgt.km<0.04){msg=`<b>${t('arArrive')}</b>`}
   else if(!pts.length){msg=t('arNone')}
+  const here=!AR.target&&!far&&AR.me&&pts.find(p=>p.km<0.15&&p.p&&p.p.cat!=='hotel');if(here)btn=`<button class="arbtn" data-act="arGuide" data-v="${here.id}"><img src="${IMG.guides}" alt="" style="height:24px;width:auto"> ${esc(t('agHere')(here.n))}</button>`;
   const arrow=tgt&&AR.head!=null&&!far?`<div class="arrow">${ic('arrowUp')}</div><div class="armsg"><b>${esc(tgt.n)}</b><br>${fmtDist(tgt.km)}</div>`:'';
   const sig=[msg,btn,!!arrow,tgt&&tgt.n,tgt&&fmtDist(tgt.km),AR.camErr].join('|');
   if(sig!==ARSIG){ARSIG=sig;bottom.innerHTML=arrow+(msg?`<div class="armsg">${msg}</div>`:'')+btn+(AR.camErr&&!msg?`<div class="armsg">${t('arNoCam')}</div>`:'')}
@@ -1164,6 +1186,77 @@ function arLoop(){
   [...cards.children].forEach(c=>{if(!keep.has(c.dataset.v))c.remove()});
   if(edge.innerHTML!==edgeHTML)edge.innerHTML=edgeHTML;
 }
+
+/* ---------- AR guide: Noura and Mohammed welcome you at a place ----------
+   Everything they say is built from the dataset (name, description, visit time, cost, best time), so it works
+   without the AI and never invents facts. The voice is the phone's own text-to-speech (free, works offline). */
+const AG={on:false,id:null,near:false,lines:[],i:0,mute:false,voice:null,timer:0};
+try{AG.mute=localStorage.getItem('sawah-ag-mute')==='1'}catch(e){}
+function agDur(m){if(!m)return '';if(S.lang==='ar'){if(m<60)return `${m} دقيقة`;if(m<75)return 'ساعة';if(m<105)return 'ساعة ونص';if(m<150)return 'ساعتين';return `${Math.round(m/60)} ساعات`}
+  if(m<60)return `${m} minutes`;if(m<75)return 'an hour';if(m<105)return 'an hour and a half';return `${Math.round(m/60*2)/2} hours`}
+function agFirst(txt,max){txt=String(txt||'').trim();if(!txt)return '';const parts=txt.split(/(?<=[.!؟?])\s+/);let o='';for(const s of parts){if((o+' '+s).trim().length>max&&o)break;o=(o+' '+s).trim()}return o.length>max+60?o.slice(0,max).replace(/\s+\S*$/,'')+'…':o}
+function agLines(p,near){
+  const ar=S.lang==='ar', name=L(p.n), c=PL.costAt(p,12*60), out=[];
+  out.push({w:'n',t:near?(ar?`هلا ومرحبا في ${name}! 👋`:`Hala, welcome to ${name}! 👋`):(ar?`هلا! خلنا نعرفك على ${name} 👋`:`Hala! This is ${name}. Let us show you around 👋`)});
+  let d=agFirst(L(p.d),ar?190:210); const area=L(p.a);
+  if(d.length<70&&area) d=(d?d.replace(/[.،]?$/,'.')+' ':'')+(ar?`وتلقاه في ${area}${/الرياض|الدرعية/.test(area)?'':'، الرياض'}.`:`You will find it in ${area}, Riyadh.`);
+  if(d) out.push({w:'m',t:d});
+  const tips=[];
+  if(p.dur) tips.push(ar?`الزيارة تاخذ تقريباً ${agDur(p.dur)}`:`a visit takes about ${agDur(p.dur)}`);
+  if(c.k==='free') tips.push(ar?'والدخول مجاني':'entry is free');
+  else if(c.k==='browse') tips.push(ar?'والدخول مجاني، والصرف على كيفك':'entry is free, spend as you like');
+  else if(c.k==='paid'&&c.v) tips.push(ar?`والتكلفة تقريباً ${Math.round(c.v)} ريال للشخص`:`it costs about SAR ${Math.round(c.v)} per person`);
+  if(p.when==='sunset') tips.push(ar?'وأحلى وقت له قبل الغروب 🌅':'the best time is just before sunset 🌅');
+  try{const now=new Date(),h=PL.hoursOn(p.hrs,now),mn=now.getHours()*60+now.getMinutes();
+    if(h.kind==='ok'&&p.hs==='verified'){const open=h.iv.some(([o,cl])=>o<=mn&&mn<cl)||h.iv.some(([o,cl])=>cl>1440&&mn+1440<cl);tips.push(open?(ar?'وهو مفتوح الحين':'and it is open now'):(ar?'بس انتبه، هو مسكّر الحين':'but note: it is closed right now'))}}catch(e){}
+  if(tips.length) out.push({w:'n',t:(ar?'نصيحة منا: ':'Our tip: ')+tips.join(ar?'، ':', ')+'.'});
+  out.push({w:'m',t:near?(ar?'استمتع بزيارتك! وإذا ودك نوريك وش القريب من هنا، اضغط تحت 👇':'Enjoy your visit! Tap below to see what is near here 👇'):(ar?'إذا ودك تزوره، نقدر ندلك عليه بالكاميرا 👇':'If you want to visit, we can guide you there with the camera 👇')});
+  return out;
+}
+function agPickVoice(){
+  const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[],lang=S.lang==='ar'?'ar':'en';
+  AG.voice=vs.find(v=>/^ar[-_]SA/i.test(v.lang)&&lang==='ar')||vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(lang))||null;
+}
+function agOpen(id,near){
+  const p=byId[id];if(!p)return;
+  if(AR.on) arClose();
+  arOpen({id,name:L(p.n),pts:[]});            // reuse the camera screen
+  AG.on=true;AG.id=id;AG.near=near;AG.lines=agLines(p,near);AG.i=0;
+  if(window.speechSynthesis){agPickVoice();speechSynthesis.onvoiceschanged=agPickVoice}
+  const el=document.getElementById('ar');
+  el.querySelector('.artop').innerHTML=`<button class="x" data-act="arClose" aria-label="${t('close')}">${ic('x')}</button><div class="tt"><b>${esc(L(p.n))}</b><small>${t('gTitle')}</small></div><button class="x" data-act="agMute" id="agmute" aria-label="${AG.mute?'unmute':'mute'}">${ic(AG.mute?'mute':'sound')}</button>`;
+  ['arcards','aredge','arbottom'].forEach(k=>{const n=document.getElementById(k);if(n)n.remove()});
+  const w=document.createElement('div');w.className='agwrap';w.id='agwrap';el.appendChild(w);
+  // the camera (if allowed); the guide still works without it
+  (async()=>{try{AR.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});const v=el.querySelector('video');if(v){v.srcObject=AR.stream;v.play().catch(()=>{})}}catch(e){}})();
+  agDraw();agSpeak();
+}
+function agDraw(){
+  const w=document.getElementById('agwrap');if(!w)return;
+  const L0=AG.lines[AG.i],last=AG.i>=AG.lines.length-1,ar=S.lang==='ar';
+  const noVoice=!AG.mute&&!AG.voice&&window.speechSynthesis&&speechSynthesis.getVoices().length>0;
+  w.innerHTML=`<div class="agbub" data-act="agNext" style="--tail:${L0.w==='n'?'60%':'34%'}"><span class="who">${t(L0.w==='n'?'agNoura':'agMohammed')}</span><div>${esc(L0.t)}</div>
+      <div class="dots">${AG.lines.map((_,i)=>`<i class="${i===AG.i?'on':''}"></i>`).join('')}</div></div>
+    <img class="agchars" id="agchars" src="${IMG.guides}" alt="${t('gTitle')}">
+    ${last?`<div class="agbtns">${AG.near?`<button class="arbtn" data-act="agNearby">${ic('pin')}${t('agNear')}</button>`:`<button class="arbtn" data-act="agGuideTo">${ic('camera')}${t('agGuide')}</button>`}<button class="arbtn ghost" data-act="agAgain">${ic('reset')}${t('agAgain')}</button><button class="arbtn ghost" data-act="arClose">${t('agDone')}</button></div>`
+      :`<div class="agnote">${noVoice?t('agNoVoice'):t('agTap')}</div>`}`;
+  const m=document.getElementById('agmute');if(m)m.innerHTML=ic(AG.mute?'mute':'sound');
+}
+const agClean=s=>String(s).replace(/[\u{1F300}-\u{1FAFF}☀-➿️]/gu,'').replace(/👇|👋|🌅/g,'').trim();
+function agTalk(on){const c=document.getElementById('agchars');if(c)c.classList.toggle('talk',on)}
+function agSpeak(){
+  clearTimeout(AG.timer);
+  if(!AG.on)return;
+  const line=AG.lines[AG.i],last=AG.i>=AG.lines.length-1;
+  const after=()=>{agTalk(false);if(!AG.on||last)return;AG.timer=setTimeout(()=>{if(AG.on){AG.i++;agDraw();agSpeak()}},700)};
+  if(AG.mute||!window.speechSynthesis||!AG.voice){agTalk(true);AG.timer=setTimeout(after,Math.max(2600,line.t.length*65));return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(agClean(line.t));u.voice=AG.voice;u.lang=AG.voice.lang;u.rate=S.lang==='ar'?0.95:1;
+  u.pitch=line.w==='n'?1.25:0.85;                       // a lighter voice for Noura, a deeper one for Mohammed
+  u.onstart=()=>agTalk(true);u.onend=after;u.onerror=()=>{agTalk(false)};
+  speechSynthesis.speak(u);
+}
+function agNext(){if(AG.i<AG.lines.length-1){speechSynthesis&&speechSynthesis.cancel();AG.i++;agDraw();agSpeak()}}
 /* ---------- render ---------- */
 const view=document.getElementById('view');
 function render(){
@@ -1490,7 +1583,7 @@ function renderSheet(){
       <button class="favbtn ${fav?'on':''}" data-act="fav" data-v="${p.id}" aria-pressed="${fav}" aria-label="${t('favs')}">${ic('heart')}</button></div>
     <p class="sh-desc">${esc(L(p.d))}</p>
     ${where}
-    ${hasLL?`<div class="btnrow"><button class="btn ghost sm" data-act="showOnMap" data-v="${p.id}">${ic('pin')}${t('showMap')}</button><button class="btn ghost sm" data-act="arTo" data-v="${p.id}">${ic('camera')}${t('arTo')}</button></div>`:''}
+    ${hasLL?`<div class="btnrow"><button class="btn ghost sm" data-act="showOnMap" data-v="${p.id}">${ic('pin')}${t('showMap')}</button><button class="btn ghost sm" data-act="arTo" data-v="${p.id}">${ic('camera')}${t('arTo')}</button></div>${p.cat!=='hotel'?`<button class="btn primary sm agsheet" data-act="arGuide" data-v="${p.id}"><img src="${IMG.guides}" alt="" style="height:26px;width:auto">${t('agBtn')}</button>`:''}`:''}
     <div class="facts">
       ${stop?`<div><span>${t('time')}</span><strong class="num">${hm(stop.t)}–${hm(stop.e)}</strong></div>`:''}
       <div><span>${t('price')}</span><strong class="num">${priceTxt(p,stop)}</strong></div>
@@ -1809,6 +1902,12 @@ document.addEventListener('click',e=>{
       if(st){const ll=PL.locOf(D,st);pts=ll?[ll]:[]}else if(p.aps&&p.aps.length)pts=p.aps.map(a=>a.ll).filter(Boolean);else{const ll=llOf(p);pts=p.branches?p.branches.map(id=>byId[id].ll).filter(Boolean):ll?[ll]:[]}
       closeSheet();arOpen({id:p.id,name:st?pname(p,st):L(p.n),pts});break}
     case 'arClose': arClose();break;
+    case 'arGuide':{const near=!!(AR.on&&AR.me);closeSheet();agOpen(v,near);break}
+    case 'agNext': agNext();break;
+    case 'agMute': AG.mute=!AG.mute;try{localStorage.setItem('sawah-ag-mute',AG.mute?'1':'')}catch(e){}if(AG.mute)speechSynthesis.cancel();agDraw();if(!AG.mute)agSpeak();break;
+    case 'agAgain': AG.i=0;agDraw();agSpeak();break;
+    case 'agNearby': {AG.on=false;speechSynthesis.cancel();arOpen(null);arStart();break}
+    case 'agGuideTo':{const p=byId[AG.id];const pts=p.aps&&p.aps.length?p.aps.map(a=>a.ll).filter(Boolean):p.branches?p.branches.map(id=>byId[id].ll).filter(Boolean):[llOf(p)].filter(Boolean);AG.on=false;speechSynthesis.cancel();arOpen({id:p.id,name:L(p.n),pts});arStart();break}
     case 'arStart': arStart();break;
     case 'arDemo': arDemo();break;
     case 'arPlace':{const id=v;arClose();openSheet({type:'place',id});break}
