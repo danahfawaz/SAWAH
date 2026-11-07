@@ -492,6 +492,41 @@ html,body{max-width:100%;overflow-x:hidden}
 .rline{fill:none;stroke:var(--accent);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:2 9;vector-effect:non-scaling-stroke}
 .pp-grid.one{grid-template-columns:1fr!important}
 .pp-grid.one .cell{grid-column:auto!important}
+
+/* ---------- AI guide (plan tab) ---------- */
+.guidebar{display:flex;align-items:center;gap:12px;padding:8px 14px 8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.gav{width:78px;height:50px;flex:none;display:block}
+.guidebar .gtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.guidebar .gt{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.25}
+.guidebar .gs{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.guidebar .gs i{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none}
+.top .brand .stamp{width:40px;height:40px}
+.chat{display:flex;flex-direction:column;gap:10px;padding:12px 0 6px}
+.bub{max-width:86%;padding:10px 14px;border-radius:18px;line-height:1.65;font-size:15px;overflow-wrap:anywhere}
+.bub.a{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-start-start-radius:6px}
+.bub.u{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-start-end-radius:6px}
+.bub.err{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.bub.err .btn{margin-top:8px}
+.typing{display:inline-flex;gap:5px;padding:14px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:gdot 1.2s infinite ease-in-out}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes gdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.typing i{animation:none;opacity:.6}}
+.gchips{display:flex;flex-wrap:wrap;gap:8px;max-width:100%}
+.gchip{padding:8px 14px;border-radius:999px;background:var(--accent-soft);font-weight:600;font-size:14px;line-height:1.4;text-align:start}
+.gsum{align-self:stretch;background:var(--surface);border:1.5px dashed color-mix(in srgb,var(--accent) 55%,var(--line));border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.gsum h3{margin:0 0 2px;font-family:var(--f-display);font-size:16px}
+.gsr{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px}
+.gsr span{color:var(--muted);flex:none}.gsr b{font-weight:600;text-align:end}
+.gsum .hint{font-size:12.5px;color:var(--muted)}
+.gsum .btn{margin-top:4px}
+.gcomp{background:linear-gradient(to top,var(--bg) 75%,transparent)}
+.composer{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:4px;padding-inline-start:16px;box-shadow:var(--shadow)}
+.composer input{flex:1;min-width:0;border:0;background:transparent;min-height:46px;font-size:16px;outline:none}
+.composer input:focus-visible{outline:none}
+.composer:focus-within{border-color:var(--accent)}
+.sendbtn{width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.sendbtn:disabled{background:var(--surface-2);color:var(--muted);cursor:default}
 </style>
 <style>[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -761,6 +796,19 @@ const T={
 };
 
 /* ---------- state ---------- */
+
+Object.assign(T.ar,{gTitle:'مرشدك في سواح',gSub:'متصل · يسولف معك بلهجتنا',gHi:'هلا والله! 👋 أنا مرشدك في سواح.\nقل لي وش ودك تسوي في الرياض، وأنا أرتب لك رحلتك.',
+  gPh:'اكتب لي وش ودك…',gSend:'إرسال',gNew:'محادثة جديدة',gSumT:'ملخص رحلتك',gGo:'أكد الخطة',gEditHint:'تبي تغير شي؟ قله لي هنا في المحادثة.',
+  gErr:'المعذرة، المرشد مو متاح الحين. جرب بعد شوي.',gRetry:'حاول مرة ثانية',gBusy:'المرشد مشغول شوي، جرب بعد دقيقة.',gNoKey:'المرشد يحتاج إعداد مفتاح الذكاء الاصطناعي في Vercel.',
+  gAfter:'تم! تبي تغير شي في الخطة؟ قل لي وش ودك.',gDays:'المدة',gWho:'مين معك',gBud:'الميزانية',gInt:'الاهتمامات',gStart:'البداية',gStay:'الفندق',gMore:'أشياء تحبها',
+  gStayY:'نحتاج فندق',gStayN:'ما نحتاج',modern:'الرياض الحديثة',
+  gChips:['يومين مع العايلة نحب التراث','طلعة مع الربع، أكل وترفيه','ميزانيتي على قدي','وش تقترح علي؟']});
+Object.assign(T.en,{gTitle:'Your SAWAH guide',gSub:'Online · happy to help',gHi:'Hala! 👋 I am your SAWAH guide.\nTell me what you would like to do in Riyadh and I will plan your trip.',
+  gPh:'Tell me what you would like…',gSend:'Send',gNew:'New chat',gSumT:'Your trip',gGo:'Confirm my plan',gEditHint:'Want to change something? Just tell me in the chat.',
+  gErr:'Sorry, the guide is not available right now. Please try again soon.',gRetry:'Try again',gBusy:'The guide is busy. Please try again in a minute.',gNoKey:'The guide needs its AI key to be set in Vercel.',
+  gAfter:'Done! Want to change anything in the plan? Just tell me.',gDays:'Length',gWho:'Who is going',gBud:'Budget',gInt:'Interests',gStart:'Start',gStay:'Hotel',gMore:'Also likes',
+  gStayY:'Needs a hotel',gStayN:'No hotel',modern:'Modern Riyadh',
+  gChips:['Two days with family, we love heritage','A day out with friends: food and fun','Something on a small budget','What do you suggest?']});
 const tomorrowISO=()=>{const d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const BASEFORM=()=>({city:'riyadh',start:tomorrowISO(),days:2,people:2,group:'family',budget:'mid',amount:300,stay:true,groups:['family'],budgets:['mid'],meals:['breakfast','lunch','dinner'],interests:[],other:''});
 const S={lang:'ar',theme:'light',tab:'explore',q:'',cat:'all',price:'all',
@@ -1025,33 +1073,110 @@ function renderPlan(){
   const savedBtn=`<button class="pillbtn" id="savedBtn" data-act="mySaved">${ic('plan')}${t('myPlans')}${S.saved.length?`<span class="count num">${S.saved.length}</span>`:''}</button>`;
   if(S.planView==='saved') return `<header class="top"><div class="toprow"><button class="iconbtn" data-act="planBack" aria-label="${t('back')}">${ic('chev','flip')}</button><h1 class="ttl" style="flex:1">${t('myPlans')}</h1></div></header>${savedList()}`;
   if(S.planView==='result'&&S.current) return `<header class="top"><div class="toprow"><h1 class="ttl">${t('plan')}</h1>${savedBtn}</div></header><div id="planwrap">${planBody(S.current)}</div>`;
-  const f=S.form, st=S.step; let body='';
-  if(st===1){
-    body=`<h2 class="q">${t('q1')}</h2>
-      ${counter('days',t('daysL'),'cal',f.days,...LIM.days)}
-      ${counter('people',t('peopleL'),'people',f.people,...LIM.people)}
-      <div class="sublabel">${t('groupL')}</div><div class="hint">${t('multiHint')}</div>
-      <div class="opts three">${[['solo','solo'],['family','family'],['friends','people']].map(([g,i])=>`<button class="opt" data-act="multi" data-k="groups" data-v="${g}" aria-pressed="${f.groups.includes(g)}">${ic(i)}${t(g)}</button>`).join('')}</div>
-      ${startField(f)}`;
-  } else if(st===2){
-    body=`<h2 class="q">${t('q2')}</h2><div class="hint">${t('multiHint')}</div><div class="opts">
-      ${[['eco','k-nature','wallet'],['mid','k-meal','wallet'],['high','k-culture','star'],['custom','k-shopping','edit']].map(([b,k,i])=>`<button class="opt" data-act="multi" data-k="budgets" data-v="${b}" aria-pressed="${f.budgets.includes(b)}"><span class="ico ${k}">${ic(i)}</span><span>${t(b)}<span class="sm">${t(b+'S')}</span></span></button>`).join('')}</div>
-      ${f.budgets.includes('custom')?`<div class="field"><label for="in-amount">${t('amountL')}</label><div class="amount"><input class="tinput num" id="in-amount" type="number" inputmode="numeric" min="0" value="${f.amount}"><span>${t('sar')}</span></div><div class="hint" id="capCalc">${capCalcTxt(f)}</div></div>`:''}
-      <div class="sublabel">${t('stayL')}</div>
-      <div class="opts two">${[[true,'stayYes','hotel'],[false,'stayNo','x']].map(([v,k,i])=>`<button class="opt" data-act="setf" data-k="stay" data-v="${v}" aria-pressed="${f.stay===v}"><span class="ico k-hotel">${ic(i)}</span>${t(k)}</button>`).join('')}</div>
-      <div class="sublabel">${t('mealsL')}</div><div class="hint">${t('mealsS')}</div>
-      <div class="opts three">${['breakfast','lunch','dinner'].map(m=>`<button class="opt" data-act="meal" data-v="${m}" aria-pressed="${(f.meals||[]).includes(m)}"><span class="ico k-meal">${ic(m)}</span>${t(m)}</button>`).join('')}</div>`;
-  } else {
-    body=`<h2 class="q">${t('q3')}</h2><div class="opts two stack">
-      ${INTS.map(c=>`<button class="opt" data-act="interest" data-v="${c}" aria-pressed="${f.interests.includes(c)}"><span class="ico k-${INTK[c]}">${ic(INTI[c])}</span>${t(c==='food'?'ifood':c)}</button>`).join('')}</div>
-      <div class="field"><label for="in-other">${t('otherL')}</label><input class="tinput" id="in-other" value="${esc(f.other)}" placeholder="${t('otherPh')}"></div>`;
-  }
-  const last=st===3;
-  return `<header class="top"><div class="toprow"><h1 class="ttl">${t('plan')}</h1>${savedBtn}</div>
-    <div class="toprow" style="min-height:auto">${st>1?`<button class="iconbtn" data-act="stepBack" aria-label="${t('back')}">${ic('chev','flip')}</button>`:''}<div class="progress" aria-hidden="true"><i style="width:${st/3*100}%"></i></div><span class="num" style="font-size:13px;color:var(--muted)">${st}/3</span></div></header>
-  <div class="stepwrap">${body}</div>
-  <div class="stickybar"><button class="btn primary" id="nextBtn" data-act="${last?'create':'next'}" ${canNext()?'':'disabled'}>${last?t('create'):t('next')}</button></div>`;
+  return renderGuide(savedBtn);
 }
+
+/* ---------- AI guide: a chat replaces the trip form ---------- */
+const GUIDE_SVG=`<svg class="gav" viewBox="0 0 132 84" role="img" aria-label="">
+<defs><pattern id="shm" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#F4EEE6"/><rect width="2" height="2" fill="#C2443A"/><rect x="2" y="2" width="2" height="2" fill="#C2443A"/></pattern>
+<clipPath id="gclip"><path d="M8 84V38C8 16 30 4 66 4s58 12 58 34v46z"/></clipPath></defs>
+<path d="M8 84V38C8 16 30 4 66 4s58 12 58 34v46z" fill="var(--accent-soft)"/>
+<g clip-path="url(#gclip)">
+<path d="M14 86c2-17 14-24 30-24s28 7 30 24z" fill="#FBF8F2" stroke="#D9CFC2" stroke-width="1"/>
+<path d="M40 62l4 9 4-9" fill="none" stroke="#D9CFC2" stroke-width="1.2"/>
+<circle cx="44" cy="41" r="13" fill="#C98F64"/>
+<path d="M32 45.5c1 9 6 13.5 12 13.5s11-4.5 12-13.5c-3 4.5-7 6-12 6s-9-1.5-12-6z" fill="#2E211A"/>
+<path d="M39.5 49c2-1.4 3.2-1.4 4.5 0 1.3-1.4 2.5-1.4 4.5 0" fill="none" stroke="#2E211A" stroke-width="2" stroke-linecap="round"/>
+<path d="M41.5 52.5c1.8 1.2 3.2 1.2 5 0" fill="none" stroke="#F3DCCB" stroke-width="1.3" stroke-linecap="round"/>
+<path d="M37.5 41q2-2 4 0M46.5 41q2-2 4 0" fill="none" stroke="#2E211A" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M28.5 46C27 27 34 19 44 19s17 8 15.5 27l7 24c-7-4-9.5-11-10-22 0-10-5-16-12.5-16S31.5 38 31.5 48c-.5 11-3 18-10 22z" fill="url(#shm)" stroke="#A9382F" stroke-width=".8"/>
+<ellipse cx="44" cy="23" rx="13" ry="3" fill="none" stroke="#1E1714" stroke-width="1.9"/>
+<ellipse cx="44" cy="25.8" rx="13.6" ry="3" fill="none" stroke="#1E1714" stroke-width="1.9"/>
+<path d="M60 86c2-17 14-24 30-24s28 7 30 24z" fill="#2F5A4E"/>
+<path d="M80 63l10 11 10-11" fill="none" stroke="#D9A23A" stroke-width="2.2" stroke-linejoin="round"/>
+<g fill="#D9A23A"><circle cx="78" cy="70" r="1.3"/><circle cx="102" cy="70" r="1.3"/><circle cx="74" cy="76" r="1.3"/><circle cx="106" cy="76" r="1.3"/><circle cx="90" cy="80" r="1.6"/><circle cx="84" cy="78" r="1.1"/><circle cx="96" cy="78" r="1.1"/></g>
+<circle cx="90" cy="42" r="12.5" fill="#D9A47C"/>
+<path d="M83.5 41.5q2-2 4 0M92.5 41.5q2-2 4 0" fill="none" stroke="#3A2A20" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M86.5 47.5c2 1.8 5 1.8 7 0" fill="none" stroke="#8E4A3A" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="82.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/><circle cx="97.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/>
+<path d="M74 47c-2-20 6-28.5 16-28.5S108 27 106 47c0 11 4 17 9 21-11-1-15-8-15.5-18C99.5 40 95.5 33.5 90 33.5S80.5 40 80.5 50C80 60 76 67 65 68c5-4 9-10 9-21z" fill="#2A2220"/>
+<path d="M80.5 50C80.5 40 84.5 33.5 90 33.5S99.5 40 99.5 50" fill="none" stroke="#D9A23A" stroke-width="1.4" stroke-dasharray="2 2.2"/><path d="M78 24c4-3 8-4.5 12-4.5s8 1.5 12 4.5" fill="none" stroke="#4A3C36" stroke-width="1.2" stroke-linecap="round"/>
+</g></svg>`;
+const G={msgs:[],draft:{},busy:false,err:null,input:''};
+function gReset(){G.msgs=[{r:'a',k:'gHi'}];G.draft={};G.busy=false;G.err=null;G.input=''}
+gReset();
+const gText=m=>m.k?t(m.k):m.t;
+function gMissing(d){
+  const m=[];
+  if(!d.days) m.push('days');
+  if(!d.groups||!d.groups.length) m.push('groups');
+  else if(!d.people&&!(d.groups.length===1&&d.groups[0]==='solo')) m.push('people');
+  if(!d.budget||(d.budget==='custom'&&!d.amount)) m.push('budget');
+  if(!(d.interests&&d.interests.length)&&!(d.other&&d.other.trim())) m.push('interests');
+  return m;
+}
+function gForm(d){
+  const f=BASEFORM(), solo=d.groups&&d.groups.length===1&&d.groups[0]==='solo';
+  f.days=Math.min(14,Math.max(1,+d.days||2));
+  f.groups=d.groups&&d.groups.length?d.groups:['family']; f.group=f.groups[0];
+  f.people=solo?1:Math.min(20,Math.max(1,+d.people||2));
+  f.budgets=[d.budget||'mid']; f.budget=f.budgets[0]; if(d.amount) f.amount=d.amount;
+  f.interests=(d.interests||[]).slice(); f.other=d.other||'';
+  if(typeof d.stay==='boolean') f.stay=d.stay;
+  if(d.meals&&d.meals.length) f.meals=d.meals.slice();
+  if(d.start&&d.start>=tomorrowISO()) f.start=d.start;
+  return f;
+}
+function gSummary(){
+  const d=G.draft, f=gForm(d);
+  const ints=[...f.interests.map(c=>t(c==='food'?'ifood':c))].join('، ');
+  const row=(l,v)=>v?`<div class="gsr"><span>${l}</span><b>${esc(v)}</b></div>`:'';
+  return `<div class="gsum"><h3>${t('gSumT')}</h3>
+    ${row(t('gDays'),t('days')(f.days))}
+    ${row(t('gWho'),grpTxt(f)+(f.people>1?' · '+t('people')(f.people):''))}
+    ${row(t('gBud'),budTxt(f))}
+    ${row(t('gInt'),ints)}
+    ${row(t('gMore'),f.other)}
+    ${row(t('gStart'),fullDate(PL.dateOf(f.start,0).getTime()))}
+    ${row(t('gStay'),t(f.stay?'gStayY':'gStayN'))}
+    <div class="hint">${t('gEditHint')}</div>
+    <button class="btn primary" data-act="gGo" ${G.busy?'disabled':''}>${ic('check')}${t('gGo')}</button></div>`;
+}
+function renderGuide(savedBtn){
+  const ready=!gMissing(G.draft).length, onlyHi=G.msgs.length===1;
+  const bubbles=G.msgs.map(m=>`<div class="bub ${m.r}">${esc(gText(m)).replace(/\n/g,'<br>')}</div>`).join('');
+  return `<header class="top"><div class="toprow">${brandHTML()}<span style="display:flex;gap:8px;align-items:center">
+      ${onlyHi?'':`<button class="iconbtn" data-act="gNew" aria-label="${t('gNew')}" title="${t('gNew')}">${ic('plus')}</button>`}${savedBtn}</span></div>
+    <div class="guidebar">${GUIDE_SVG}<div class="gtx"><span class="gt">${t('gTitle')}</span><span class="gs"><i></i>${t('gSub')}</span></div></div></header>
+  <div class="chat" id="chat" aria-live="polite">${bubbles}
+    ${onlyHi?`<div class="gchips">${t('gChips').map(c=>`<button class="gchip" data-act="gChip" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:''}
+    ${G.busy?`<div class="bub a typing" aria-label="…"><i></i><i></i><i></i></div>`:''}
+    ${G.err?`<div class="bub a err">${t(G.err)}${G.err==='gNoKey'?'':`<br><button class="btn sm" data-act="gRetry">${ic('reset')}${t('gRetry')}</button>`}</div>`:''}
+    ${ready&&!G.busy&&!G.err&&!onlyHi?gSummary():''}
+  </div>
+  <div class="stickybar gcomp"><div class="composer"><input id="in-guide" type="text" autocomplete="off" enterkeyhint="send" maxlength="600" placeholder="${t('gPh')}" value="${esc(G.input)}" aria-label="${t('gPh')}">
+    <button class="sendbtn" data-act="gSend" aria-label="${t('gSend')}" ${G.busy?'disabled':''}>${ic('send',S.lang==='ar'?'flip':'')}</button></div></div>`;
+}
+function gScroll(focus){requestAnimationFrame(()=>{window.scrollTo(0,document.body.scrollHeight);if(focus){const i=document.getElementById('in-guide');if(i)i.focus({preventScroll:true})}})}
+function gRender(focus){if(S.tab==='plan'&&S.planView==='form'&&!S.detail){render();gScroll(focus)}}
+async function gAsk(){
+  G.busy=true;G.err=null;gRender();
+  const msgs=G.msgs.filter(m=>!m.k).map(m=>({role:m.r==='u'?'user':'assistant',text:m.t}));
+  try{
+    const r=await fetch('/api/guide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,draft:G.draft,lang:S.lang})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){G.err=j.error==='not_configured'?'gNoKey':j.error==='busy'?'gBusy':'gErr';G.busy=false;gRender();return}
+    G.draft={...G.draft,...(j.fields||{})};
+    G.msgs.push({r:'a',t:j.reply});G.busy=false;
+    if(j.confirmed&&!gMissing(G.draft).length){gRender();gGo();return}
+    gRender(true);
+  }catch(e){G.err='gErr';G.busy=false;gRender()}
+}
+function gSend(text){
+  text=String(text||'').trim(); if(!text||G.busy) return;
+  G.msgs.push({r:'u',t:text.slice(0,600)});G.input='';gAsk();
+}
+function gGo(){if(gMissing(G.draft).length)return;runCreate(gForm(G.draft))}
 function canNext(){const f=S.form;if(S.step===3)return f.interests.length>0||f.other.trim().length>0;if(S.step===2&&f.budgets.includes('custom'))return +f.amount>0;if(S.step===1)return !!f.start;return true}
 
 function planBody(pl){
@@ -1461,7 +1586,7 @@ let tt;function toast(msg){const el=document.getElementById('toast');el.innerHTM
 /* ---------- actions ---------- */
 function savePlanAnimated(){
   if(!isSavedPlan(S.current)){S.saved.push(S.current);persist()}
-  const finish=()=>{S.current=null;S.planView='form';S.step=1;S.form=BASEFORM();S.openDays={0:true};render();scrollTo(0,0);toast(t('savedToast'));
+  const finish=()=>{S.current=null;S.planView='form';S.step=1;S.form=BASEFORM();gReset();S.openDays={0:true};render();scrollTo(0,0);toast(t('savedToast'));
     const c=document.querySelector('#savedBtn');if(c&&c.animate)c.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:420,easing:'ease-out'})};
   const wrap=document.getElementById('planwrap'),btn=document.getElementById('savedBtn');
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1498,6 +1623,11 @@ document.addEventListener('click',e=>{
     case 'next': S.step=Math.min(3,S.step+1);render();scrollTo(0,0);break;
     case 'stepBack': S.step=Math.max(1,S.step-1);render();break;
     case 'create': runCreate(f);break;
+    case 'gSend':{const i=document.getElementById('in-guide');gSend(i?i.value:G.input);break}
+    case 'gChip': gSend(v);break;
+    case 'gRetry': gAsk();break;
+    case 'gGo': gGo();break;
+    case 'gNew': gReset();render();scrollTo(0,0);break;
     case 'multi':{const k=b.dataset.k,arr=f[k];const i=arr.indexOf(v);
       if(i>=0){if(arr.length>1)arr.splice(i,1)}
       else if(k==='budgets'&&(v==='custom'||arr.includes('custom')))f[k]=[v];   // a typed amount is used on its own
@@ -1536,7 +1666,7 @@ document.addEventListener('click',e=>{
       const txt=document.getElementById('mText').value.trim(),first=cityVisits('riyadh').length===0;(S.reviews[MC.placeId]=S.reviews[MC.placeId]||[]).push({stars:MC.stars,text:txt,date:Date.now(),mine:true,stopKey:MC.stopKey||null});persist();const pid=MC.placeId;closeModal();render();renderSheet();if(first)openModal({kind:'stamp',city:'riyadh',placeId:pid,rated:true});else toast(t('published'));break}
     case 'mSaveReason':{const txt=document.getElementById('mText').value.trim();const R=t('reasons'),other=MC.reason===R.length-1;MC.stop.r=other&&txt?txt:[MC.reason!==null?R[MC.reason]:'',txt].filter(Boolean).join(' – ');persist();closeModal();toast(t('reasonSaved'));render();renderSheet();break}
     case 'confirm': savePlanAnimated();break;
-    case 'editForm': S.planView='form';S.step=1;S.form=JSON.parse(JSON.stringify(S.current.form));S.current=null;render();scrollTo(0,0);break;
+    case 'editForm': S.planView='form';S.current=null;G.err=null;G.msgs.push({r:'a',k:'gAfter'});render();gScroll(true);break;
     case 'mySaved': S.planView='saved';render();scrollTo(0,0);break;
     case 'pin': if(MAPDRAG){MAPDRAG=false;break} S.mapSel=v;S.nearFrom=null;render();break;
     case 'npin': if(MAPDRAG){MAPDRAG=false;break} S.mapSel='n:'+v;render();break;
@@ -1583,6 +1713,7 @@ document.addEventListener('input',e=>{
   else if(id==='in-days'||id==='in-people'){const k=id.slice(3);const n=parseInt(e.target.value,10);if(!isNaN(n))S.form[k]=n}
   else if(id==='in-amount'){S.form.amount=e.target.value;const c=document.getElementById('capCalc');if(c)c.textContent=capCalcTxt(S.form)}
   else if(id==='in-other'){S.form.other=e.target.value}
+  else if(id==='in-guide'){G.input=e.target.value}
   else if(id==='in-start'){S.form.start=e.target.value}
   else if(id==='mText'&&MC&&MC.kind==='reason'){MC.text=e.target.value}
   const nb=document.getElementById('nextBtn');if(nb&&S.tab==='plan')nb.disabled=!canNext();
@@ -1593,7 +1724,7 @@ document.addEventListener('change',e=>{
   if(id==='in-start'&&!e.target.value){S.form.start=tomorrowISO();render()}
 });
 document.addEventListener('submit',e=>{if(e.target.id==='loginForm'){e.preventDefault();doLogin()}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(MC)closeModal();else if(SC)closeSheet()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='in-guide'&&!e.isComposing){e.preventDefault();gSend(e.target.value);return}if(e.key==='Escape'){if(MC)closeModal();else if(SC)closeSheet()}});
 (function splash(){
   const el=document.getElementById('splash'); if(!el) return;
   el.innerHTML=`<div class="spl"><div class="spl-shadow"></div><div class="spl-logo">${stampSVG({kind:'logo',rot:-8,seed:7})}</div>
