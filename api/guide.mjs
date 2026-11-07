@@ -5,7 +5,7 @@
 // Optional: GEMINI_MODEL to choose another model.
 import { CATALOG } from './_catalog.mjs';
 
-const MODELS = [process.env.GEMINI_MODEL, 'gemini-flash-latest', 'gemini-2.5-flash'].filter(Boolean);
+const MODELS = [process.env.GEMINI_MODEL, 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash'].filter(Boolean);
 const INTERESTS = ['heritage', 'culture', 'food', 'nature', 'adventure', 'shopping', 'entertainment', 'modern'];
 const GROUPS = ['solo', 'family', 'friends'];
 const BUDGETS = ['eco', 'mid', 'high', 'custom'];
@@ -91,7 +91,7 @@ function cleanFields(f) {
 
 async function askGemini(model, key, body) {
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 25000);
+  const timer = setTimeout(() => ctl.abort(), 45000);
   try {
     return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST', signal: ctl.signal,
@@ -101,9 +101,43 @@ async function askGemini(model, key, body) {
   } finally { clearTimeout(timer); }
 }
 
+// Ask the models in order: a missing model (404) moves to the next one, and a request the model rejects (400)
+// is tried again without the strict JSON schema. Returns {out} or {error, status, detail}.
+async function generate(key, request) {
+  let last = { error: 'no_model' };
+  for (const model of MODELS) {
+    for (const strict of [true, false]) {
+      const body = strict ? request : { ...request, generationConfig: { ...request.generationConfig, responseSchema: undefined } };
+      let r;
+      try { r = await askGemini(model, key, body); } catch { return { error: 'timeout', model }; }
+      const data = await r.json().catch(() => null);
+      const detail = data && data.error && data.error.message ? String(data.error.message).slice(0, 300) : undefined;
+      if (r.status === 404) { last = { error: 'no_model', model, detail }; break; }
+      if (r.status === 429) return { error: 'busy', model, detail };
+      if (r.status === 400 && strict) { last = { error: 'upstream', status: 400, model, detail }; continue; }
+      if (!r.ok) return { error: 'upstream', status: r.status, model, detail };
+      const c = data && data.candidates && data.candidates[0];
+      const text = c && c.content && c.content.parts && c.content.parts.map(p => p.text || '').join('');
+      let out; try { out = JSON.parse(String(text || '').replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch { out = null; }
+      if (!out || typeof out.reply !== 'string' || !out.reply.trim()) return { error: 'bad_answer', model, detail: c && c.finishReason };
+      return { out, model };
+    }
+  }
+  return last;
+}
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
   const key = process.env.GEMINI_API_KEY;
+  // Open /api/guide in a browser to check the setup (shows only status text, never the key)
+  if (req.method === 'GET') {
+    if (!key) return res.status(200).json({ ok: false, problem: 'GEMINI_API_KEY is not set in Vercel (or the site was not redeployed after adding it)' });
+    const g = await generate(key, {
+      contents: [{ role: 'user', parts: [{ text: 'Reply with {"reply":"ok","fields":{},"confirmed":false}' }] }],
+      generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA, maxOutputTokens: 4096 }
+    });
+    return res.status(200).json(g.out ? { ok: true, model: g.model } : { ok: false, ...g });
+  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
   if (!key) return res.status(503).json({ error: 'not_configured' });
 
   let body = req.body;
@@ -122,24 +156,17 @@ export default async function handler(req, res) {
   if (!contents.length || contents[contents.length - 1].role !== 'user') return res.status(400).json({ error: 'bad_request' });
   const lang = body.lang === 'en' ? 'en' : 'ar';
 
-  const request = {
+  // maxOutputTokens is generous because newer Gemini models spend part of it on hidden "thinking"
+  const g = await generate(key, {
     systemInstruction: { parts: [{ text: systemPrompt(cleanFields(body.draft), lang) }] },
     contents,
-    generationConfig: { temperature: 0.6, maxOutputTokens: 800, responseMimeType: 'application/json', responseSchema: SCHEMA }
-  };
-
-  for (const model of MODELS) {
-    let r;
-    try { r = await askGemini(model, key, request); } catch { return res.status(504).json({ error: 'timeout' }); }
-    if (r.status === 404) continue; // model name not available: try the next one
-    if (r.status === 429) return res.status(429).json({ error: 'busy' });
-    if (!r.ok) return res.status(502).json({ error: 'upstream', status: r.status });
-    const data = await r.json().catch(() => null);
-    const text = data && data.candidates && data.candidates[0] && data.candidates[0].content
-      && data.candidates[0].content.parts && data.candidates[0].content.parts.map(p => p.text || '').join('');
-    let out; try { out = JSON.parse(text); } catch { out = null; }
-    if (!out || typeof out.reply !== 'string' || !out.reply.trim()) return res.status(502).json({ error: 'bad_answer' });
-    return res.status(200).json({ reply: out.reply.trim().slice(0, 1200), fields: cleanFields(out.fields), confirmed: out.confirmed === true });
+    generationConfig: { temperature: 0.6, maxOutputTokens: 8192, responseMimeType: 'application/json', responseSchema: SCHEMA }
+  });
+  if (!g.out) {
+    console.error('guide error', JSON.stringify(g));
+    const code = g.error === 'busy' ? 429 : g.error === 'timeout' ? 504 : 502;
+    return res.status(code).json(g);
   }
-  return res.status(502).json({ error: 'no_model' });
+  const out = g.out;
+  return res.status(200).json({ reply: out.reply.trim().slice(0, 1200), fields: cleanFields(out.fields), confirmed: out.confirmed === true });
 }

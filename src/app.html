@@ -1283,7 +1283,7 @@ function renderGuide(savedBtn){
   <div class="chat" id="chat" aria-live="polite">${bubbles}
     ${onlyHi?`<div class="gchips">${t('gChips').map(([i,c,s])=>`<button class="gchip" data-act="gChip" data-v="${esc(s)}">${ic(i)}<span>${esc(c)}</span></button>`).join('')}</div>`:''}
     ${G.busy?`<div class="bub a typing" aria-label="…"><i></i><i></i><i></i></div>`:''}
-    ${G.err?`<div class="bub a err">${t(G.err)}${G.err==='gNoKey'?'':`<br><button class="btn sm" data-act="gRetry">${ic('reset')}${t('gRetry')}</button>`}</div>`:''}
+    ${G.err?`<div class="bub a err">${t(G.err)}${G.errCode?`<br><small style="color:var(--muted);font-size:11.5px" dir="ltr">${esc(G.errCode)}</small>`:''}${G.err==='gNoKey'?'':`<br><button class="btn sm" data-act="gRetry">${ic('reset')}${t('gRetry')}</button>`}</div>`:''}
     ${ready&&!G.busy&&!G.err&&!onlyHi?gSummary():''}
   </div>
   <div class="stickybar gcomp"><div class="composer"><input id="in-guide" type="text" autocomplete="off" enterkeyhint="send" maxlength="600" placeholder="${t('gPh')}" value="${esc(G.input)}" aria-label="${t('gPh')}">
@@ -1292,17 +1292,17 @@ function renderGuide(savedBtn){
 function gScroll(focus){requestAnimationFrame(()=>{window.scrollTo(0,document.body.scrollHeight);if(focus){const i=document.getElementById('in-guide');if(i)i.focus({preventScroll:true})}})}
 function gRender(focus){if(S.tab==='plan'&&S.planView==='form'&&!S.detail){render();gScroll(focus)}}
 async function gAsk(){
-  G.busy=true;G.err=null;gRender();
+  G.busy=true;G.err=null;G.errCode='';gRender();
   const msgs=G.msgs.filter(m=>!m.k).map(m=>({role:m.r==='u'?'user':'assistant',text:m.t}));
   try{
     const r=await fetch('/api/guide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,draft:G.draft,lang:S.lang})});
     const j=await r.json().catch(()=>({}));
-    if(!r.ok){G.err=j.error==='not_configured'?'gNoKey':j.error==='busy'?'gBusy':'gErr';G.busy=false;gRender();return}
+    if(!r.ok){G.err=j.error==='not_configured'?'gNoKey':j.error==='busy'?'gBusy':'gErr';G.errCode=[r.status,j.error,j.status].filter(Boolean).join(' · ');G.busy=false;gRender();return}
     G.draft={...G.draft,...(j.fields||{})};
     G.msgs.push({r:'a',t:j.reply});G.busy=false;
     if(j.confirmed&&!gMissing(G.draft).length){gRender();gGo();return}
     gRender(true);
-  }catch(e){G.err='gErr';G.busy=false;gRender()}
+  }catch(e){G.err='gErr';G.errCode='network';G.busy=false;gRender()}
 }
 function gSend(text){
   text=String(text||'').trim(); if(!text||G.busy) return;
