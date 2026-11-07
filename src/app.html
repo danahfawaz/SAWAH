@@ -60,8 +60,20 @@ svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;str
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:14px 12px;display:flex;flex-direction:column;gap:12px}
 .toprow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px}
 .mapbox{position:relative;height:calc(100vh - var(--nav-h) - 150px - env(safe-area-inset-bottom,0px) - env(safe-area-inset-top,0px));min-height:380px;border-radius:22px;overflow:hidden;border:1px solid var(--line);background:var(--mapland)}
-#mapsvg{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
-#mapsvg:active{cursor:grabbing}
+#mapslot,.mapbox .mlmap{position:absolute;inset:0}
+.mapwait{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-weight:600;pointer-events:none}
+.mk{cursor:pointer;line-height:0}
+.mk svg path{stroke:var(--surface);stroke-width:2}
+.mk svg circle{fill:var(--surface)}
+.mk-sel svg path{fill:var(--accent)}
+.mk-sel{pointer-events:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
+.mk-route svg path{fill:var(--accent)}
+.mk-route svg text{fill:var(--accent-ink);font-size:11px;font-weight:800;font-family:var(--f-body)}
+.mk-me{width:26px;height:26px;position:relative;pointer-events:none}
+.mk-me .halo{position:absolute;inset:0;border-radius:50%;background:color-mix(in srgb,#3D7BD9 25%,transparent)}
+.mk-me .dotm{position:absolute;inset:6px;border-radius:50%;background:#3D7BD9;border:2.5px solid #fff}
+.mapbox .maplibregl-ctrl-attrib{font-size:10.5px;background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--muted)}
+.mapbox .maplibregl-ctrl-attrib a{color:inherit}
 .m-land{fill:var(--mapland)} .m-sea{fill:var(--mapsea)} .m-rock{fill:var(--maprock)}
 .m-wadi{fill:none;stroke:var(--mapgreen);stroke-width:26;stroke-linecap:round;stroke-linejoin:round}
 .m-road{fill:none;stroke:var(--maproad);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
@@ -71,9 +83,9 @@ svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;str
 .pin circle{fill:var(--surface)}
 .pk-heritage path{fill:var(--i-heritage)} .pk-culture path{fill:var(--i-culture)} .pk-nature path{fill:var(--i-nature)} .pk-shopping path{fill:var(--i-shopping)} .pk-entertainment path{fill:var(--i-entertainment)} .pk-meal path{fill:var(--i-meal)} .pk-hotel path{fill:var(--i-hotel)}
 .pin.sel path{fill:var(--accent)}
-.mapctl{position:absolute;top:12px;inset-inline-end:12px;display:flex;flex-direction:column;gap:8px}
+.mapctl{position:absolute;top:12px;inset-inline-end:12px;z-index:2;display:flex;flex-direction:column;gap:8px}
 .mapctl button{width:42px;height:42px;border-radius:13px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;box-shadow:var(--shadow)}
-.mapcard{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.mapcard{position:absolute;left:12px;right:12px;bottom:30px;z-index:2;display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
 .mapcard .th{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none;overflow:hidden}
 .mapcard .th img{width:90%;height:90%;object-fit:contain}
 .mapcard .tx{flex:1;min-width:0}
@@ -803,13 +815,13 @@ const T={
 
 /* ---------- state ---------- */
 
-Object.assign(T.ar,{gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا ومرحبا 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nبس عطنا كم يوم بتجلس، ومين معك، وميزانيتك، ووش تحب، ونبني لك احلا جدول يومي بأماكن تناسبك.',
+Object.assign(T.ar,{mapFail:'ما قدرنا نحمّل الخريطة. تأكد من الإنترنت وجرب مرة ثانية.',gTitle:'نورة ومحمد',gSub:'مرشدينك الذكيين في سواح · متصلين',gHi:'هلا ومرحبا 👋\nاحنا نورة ومحمد، مرشدينك الذكيين في سواح.\nبس عطنا كم يوم بتجلس، ومين معك، وميزانيتك، ووش تحب، ونبني لك احلا جدول يومي بأماكن تناسبك.',
   gPh:'اكتب لنا وش ودك…',gSend:'إرسال',gNew:'محادثة جديدة',gSumT:'ملخص رحلتك',gGo:'أكد الخطة',gEditHint:'تبي تغير شي؟ قل لنا هنا في المحادثة.',
   gErr:'المعذرة، ما نقدر نرد الحين. جرب بعد شوي.',gRetry:'حاول مرة ثانية',gBusy:'احنا مشغولين شوي، جرب بعد دقيقة.',gNoKey:'نحتاج إعداد مفتاح الذكاء الاصطناعي في Vercel عشان نقدر نرد.',
   gAfter:'تم! تبي تغير شي في الخطة؟ قل لنا وش ودك.',gDays:'المدة',gWho:'مين معك',gBud:'الميزانية',gInt:'الاهتمامات',gStart:'البداية',gStay:'الفندق',gMore:'أشياء تحبها',
   gStayY:'نحتاج فندق',gStayN:'ما نحتاج',modern:'الرياض الحديثة',
   gChips:[['cal','يومين مع العائلة','يومين مع العائلة'],['heritage','أبي أماكن تراثية','أبي أماكن تراثية'],['lunch','طلعة مع الأصحاب','طلعة مع الأصحاب'],['wallet','ميزانيتي محدودة','ميزانيتي محدودة'],['spark','وش تقترحون علي؟','وش تقترحون علي؟']]});
-Object.assign(T.en,{gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala, welcome 👋\nWe are Noura and Mohammed, your SAWAH guides.\nSAWAH plans your Riyadh trip your way: tell us how many days, who is coming, your budget and what you enjoy, and we will build a day-by-day plan with places that suit you.',
+Object.assign(T.en,{mapFail:'The map could not load. Check your connection and try again.',gTitle:'Noura & Mohammed',gSub:'Your SAWAH guides · online',gHi:'Hala, welcome 👋\nWe are Noura and Mohammed, your SAWAH guides.\nSAWAH plans your Riyadh trip your way: tell us how many days, who is coming, your budget and what you enjoy, and we will build a day-by-day plan with places that suit you.',
   gPh:'Tell us what you would like…',gSend:'Send',gNew:'New chat',gSumT:'Your trip',gGo:'Confirm my plan',gEditHint:'Want to change something? Just tell us in the chat.',
   gErr:'Sorry, we cannot reply right now. Please try again soon.',gRetry:'Try again',gBusy:'We are a bit busy. Please try again in a minute.',gNoKey:'The AI key must be set in Vercel before we can reply.',
   gAfter:'Done! Want to change anything in the plan? Just tell us.',gDays:'Length',gWho:'Who is going',gBud:'Budget',gInt:'Interests',gStart:'Start',gStay:'Hotel',gMore:'Also likes',
@@ -883,37 +895,22 @@ const isSavedPlan=pl=>S.saved.includes(pl)||S.saved.some(s=>s.id===pl.id);
 const curPlan=()=>S.detail?S.saved.find(p=>p.id===S.detail):S.current;
 function fixPlan(pl){pl.days.forEach(st=>st.forEach(s=>{const p=byId[s.id];if(p&&p.branches&&!s.br)s.br=p.branches.find(id=>byId[id].ll)||p.branches[0];if(p&&!p.branches)s.br=null;if(p&&!(p.aps&&p.aps.length))s.ap=null}));PL.retimePlan(D,pl);return pl}
 
-/* ---------- map ---------- */
+/* ---------- map: real map (MapLibre GL + OpenFreeMap tiles, data © OpenStreetMap contributors) ---------- */
 const MAPB={n:25.06,s:24.04,w:45.88,e:46.86};
-let GEOC=null;
-function geo(){if(GEOC)return GEOC;const b=MAPB,k=Math.cos((b.n+b.s)/2*Math.PI/180),Wd=(b.e-b.w)*k,Hd=b.n-b.s,sc=2000/Math.max(Wd,Hd);
-  const P=(la,lo)=>[((Math.min(b.e,Math.max(b.w,lo))-b.w)*k*sc),((b.n-Math.min(b.n,Math.max(b.s,la)))*sc)];
-  const inv=(x,y)=>[b.n-y/sc,b.w+x/(k*sc)];
-  return GEOC={W:Wd*sc,H:Hd*sc,P,inv};}
 const inMap=ll=>ll[0]<=MAPB.n&&ll[0]>=MAPB.s&&ll[1]>=MAPB.w&&ll[1]<=MAPB.e;
-const shortName=n=>{n=String(n||'').split(' – ')[0].split(' - ')[0].trim();return n.length>16?n.slice(0,15).trim()+'…':n};
-let LABELS=[];
-const lab=(n,xy,prio,sel)=>{LABELS.push({s:shortName(n),xy,prio,sel});return ''};
-const labelsLayer=()=>`<g id="labels">${LABELS.map(o=>`<g class="lbl" data-p="${o.prio}" data-x="${o.xy[0].toFixed(1)}" data-y="${o.xy[1].toFixed(1)}" ${o.sel?'data-sel="1"':''} style="transform:translate(${o.xy[0].toFixed(1)}px,${o.xy[1].toFixed(1)}px) scale(calc(var(--u,1) * ${o.sel?1.4:1}))"><text class="plab" y="13" text-anchor="middle" data-w="${o.s.length}">${esc(o.s)}</text></g>`).join('')}</g>`;
-function boxMV(n,s,w,e,pad){const G=geo(),[x1,y1]=G.P(n,w),[x2,y2]=G.P(s,e),pw=(x2-x1)*(pad||0),ph=(y2-y1)*(pad||0);return {x:x1-pw,y:y1-ph,w:(x2-x1)+2*pw,h:(y2-y1)+2*ph}}
-const coreMV=()=>boxMV(24.92,24.55,46.50,46.85,0);
-const ptsStr=arr=>{const G=geo();return arr.map(([a,b])=>G.P(a,b).map(v=>v.toFixed(1)).join(',')).join(' ')};
-function decor(){
-  const line=(arr,cls)=>`<polyline class="${cls}" points="${ptsStr(arr)}"/>`;
-  let o=`<rect x="-6000" y="-6000" width="16000" height="16000" class="m-land"/>`;
-  o+=line([[24.98,46.50],[24.90,46.53],[24.83,46.545],[24.77,46.562],[24.735,46.574],[24.70,46.595],[24.66,46.622],[24.62,46.652],[24.59,46.69],[24.57,46.73],[24.50,46.80],[24.42,46.86]],'m-wadi');
-  o+=line([[25.05,46.600],[24.90,46.615],[24.83,46.630],[24.76,46.655],[24.70,46.680],[24.64,46.705],[24.57,46.735],[24.40,46.80]],'m-road big');
-  o+=line([[24.70,46.53],[24.693,46.62],[24.688,46.70],[24.684,46.86]],'m-road big');
-  o+=line([[24.66,46.62],[24.60,46.45],[24.52,46.25],[24.42,46.05],[24.38,45.95]],'m-road big');
-  o+=line([[24.778,46.53],[24.780,46.66],[24.782,46.86]],'m-road');
-  o+=line([[24.95,46.770],[24.83,46.770],[24.70,46.775],[24.57,46.78]],'m-road');
-  o+=line([[24.80,46.665],[24.72,46.688],[24.66,46.712]],'m-road');
-  o+=line([[24.62,46.62],[24.52,46.46],[24.40,46.33],[24.30,46.22]],'m-road');
-  return o;
-}
-let MV=null, MAPDRAG=false;
+const ML_V='4.7.1', ML_JS=`https://unpkg.com/maplibre-gl@${ML_V}/dist/maplibre-gl.js`, ML_CSS=`https://unpkg.com/maplibre-gl@${ML_V}/dist/maplibre-gl.css`,
+  ML_RTL='https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js';
+const MSTYLE=dark=>'https://tiles.openfreemap.org/styles/'+(dark?'dark':'liberty');
+const CORE=[[46.50,24.55],[46.85,24.92]];            // [lng,lat] box of central Riyadh
+let MAP=null,MAPEL=null,MLP=null,MAPREADY=false,MAPSTYLE='',CAM={b:CORE},MK=[],MAPDRAG=false,ROUTEC={},ROUTEKEY='';
+const NK={restaurant:'meal',cafe:'meal',hotel:'hotel',museum:'heritage',landmark:'heritage',religious_site:'heritage',park:'nature',garden:'nature',sports_venue:'nature',mall:'shopping',theme_park:'entertainment',cinema:'entertainment',theatre:'culture',public_art:'culture'};
 const pinPath='<path d="M0 0 C-4 -8 -11 -13 -11 -21 A11 11 0 0 1 11 -21 C11 -13 4 -8 0 0 Z"/>';
-function mapPoints(){ // core pins: discovery places (branches shown individually) + hotels
+function coreView(){CAM={b:CORE}}
+function focusLL(ll){CAM={c:[ll[1],ll[0]],z:15}}
+function focusPlace(id){const p=byId[id],ll=llOf(p);S.mapRoute=null;S.mapSel=p.branches?(p.branches.find(b=>byId[b].ll)||id):id;if(ll)focusLL(ll)}
+function fitRoute(){const R=routeStops();if(!R)return;const ll=R.stops.map(x=>x.ll).filter(Boolean);if(R.pl.hotel&&byId[R.pl.hotel]&&byId[R.pl.hotel].ll)ll.push(byId[R.pl.hotel].ll);if(!ll.length)return;
+  const la=ll.map(x=>x[0]),lo=ll.map(x=>x[1]);CAM={b:[[Math.min(...lo),Math.min(...la)],[Math.max(...lo),Math.max(...la)]],pad:70}}
+function mapPoints(){ // SAWAH places (branches shown one by one) + hotels
   const pts=[];
   DISC.forEach(p=>{if(p.branches)p.branches.forEach(id=>{const b=byId[id];if(b.ll)pts.push({id,p:b,ll:b.ll,k:'meal'})});else if(p.ll&&p.map!==false)pts.push({id:p.id,p,ll:p.ll,k:kOf(p)})});
   HOTELS.forEach(h=>{if(h.ll)pts.push({id:h.id,p:h,ll:h.ll,k:'hotel'})});
@@ -921,30 +918,9 @@ function mapPoints(){ // core pins: discovery places (branches shown individuall
 }
 function routeStops(){const r=S.mapRoute;if(!r)return null;const pl=r.saved?S.saved.find(p=>p.id===r.saved):S.current;if(!pl||!pl.days[r.d])return null;return {pl,stops:pl.days[r.d].map(s=>({s,p:byId[s.id],ll:PL.locOf(D,s)}))}}
 function renderMap(){
-  const G=geo();LABELS=[];
-  if(!MV) MV=coreMV();
   const R=routeStops();
   const sel=S.mapSel&&!String(S.mapSel).startsWith('n:')?byId[S.mapSel]:null;
   const nearSel=S.mapSel&&String(S.mapSel).startsWith('n:')?D.near.find(x=>x.id===S.mapSel.slice(2)):null;
-  const pts=mapPoints().sort((a,b)=>(a.id===S.mapSel)-(b.id===S.mapSel)||b.ll[0]-a.ll[0]);
-  const pin=(x,cls,act,v,title,extra)=>`<g class="pin ${cls}" data-act="${act}" data-v="${v}" data-x="${x[0].toFixed(1)}" data-y="${x[1].toFixed(1)}" ${extra||''} style="transform:translate(${x[0].toFixed(1)}px,${x[1].toFixed(1)}px) scale(calc(var(--u,1) * ${/data-sel/.test(extra||'')?1.4:1}))"><title>${esc(title)}</title>`;
-  const hotelId=R&&R.pl.hotel;
-  let pins=pts.map(o=>{const x=G.P(...o.ll),isSel=o.id===S.mapSel||o.id===hotelId;return pin(x,`pk-${o.k}${isSel?' sel':''}${R&&o.id!==hotelId?' dim':''}`,'pin',o.id,L(o.p.n),isSel?'data-sel="1"':'')+pinPath+'<circle cy="-21" r="4.6"/>'+lab(L(o.p.n),x,isSel?0:1,isSel)+'</g>'}).join('');
-  // nearby supporting places (map dataset) around the selected place or the route
-  let anchors=[];
-  if(sel) anchors=[{ll:llOf(sel),n:6e3}];
-  if(nearSel) anchors=[{ll:nearSel.ll}];
-  if(R) anchors=R.stops.filter(x=>x.ll).map(x=>({ll:x.ll}));
-  const nearSet=new Map(D.near.map(x=>[x.id,x]));   // every map-dataset place is shown; none of them is ever added to a plan
-  if(nearSel) nearSet.set(nearSel.id,nearSel);
-  const NK={restaurant:'meal',cafe:'meal',hotel:'hotel',museum:'heritage',landmark:'heritage',religious_site:'heritage',park:'nature',garden:'nature',sports_venue:'nature',mall:'shopping',theme_park:'entertainment',cinema:'entertainment',theatre:'culture',public_art:'culture'};
-  pins=[...nearSet.values()].map(x=>{const isSel=nearSel&&x.id===nearSel.id;return pin(G.P(...x.ll),`npin pk-${x.hotel?'hotel':NK[x.cat]||'culture'}${isSel?' sel':''}${R?' dim':''}`,'npin',x.id,L(x.n),isSel?'data-sel="1"':'')+pinPath+'<circle cy="-21" r="4.6"/>'+lab(L(x.n),G.P(...x.ll),isSel?0:2,isSel)+`</g>`}).join('')+pins;
-  let route='';
-  if(R){const ll=R.stops.filter(x=>x.ll);
-    const hl=hotelId&&byId[hotelId].ll?[byId[hotelId].ll]:[];
-    route=`<polyline class="rline" points="${ptsStr([...hl,...ll.map(x=>x.ll),...hl])}"/>`;
-    pins+=R.stops.map((x,i)=>x.ll?pin(G.P(...x.ll),'rpin','routeStop',i,pname(x.p,x.s))+pinPath+`<text y="-17.5" text-anchor="middle">${i+1}</text>`+lab(pname(x.p,x.s),G.P(...x.ll),0,false)+`</g>`:'').join('');}
-  if(S.me){pins+=pin(G.P(...S.me),'mepin','noop','me',t('yourLoc'),'data-sel="1"')+`<circle class="halo" r="13"/><circle class="dotm" r="7"/></g>`;}
   let card='';
   if(S.me&&S.meList&&!R&&!sel&&!nearSel){
     const near=mapPoints().filter(o=>o.k!=='hotel').map(o=>({o,d:PL.km(S.me,o.ll)})).sort((a,b)=>a.d-b.d).slice(0,3);
@@ -954,52 +930,106 @@ function renderMap(){
   else if(sel){const p=sel.isBranch?byId[sel.brand]||sel:sel;card=`<div class="mapcard"><span class="th k-${kOf(p)}">${thumb(p)}</span><span class="tx"><span class="t1">${esc(L(sel.n))}</span><span class="t2">${catL(p)} · ${esc(L(sel.a))} · <span class="num">${shortPrice(p)}</span></span></span><button class="btn primary sm" data-act="place" data-v="${p.id}">${t('details')}</button><button class="iconbtn" data-act="mapUnsel" aria-label="${t('close')}">${ic('x')}</button></div>`}
   else if(nearSel){card=`<div class="mapcard"><span class="th k-${nearSel.hotel?'hotel':['restaurant','cafe'].includes(nearSel.cat)?'meal':'culture'}">${ic(nearSel.hotel?'hotel':nearSel.cat==='cafe'?'breakfast':nearSel.cat==='restaurant'?'lunch':'pin')}</span><span class="tx"><span class="t1">${esc(L(nearSel.n))}</span><span class="t2">${L(CATL[nearSel.cat]||[nearSel.cat,nearSel.cat])}${S.nearFrom?' · '+t('nearOf')(esc(L(byId[S.nearFrom].n))):''}</span></span><a class="btn primary sm" href="${esc(gmapsUrl(nearSel.n[1]||nearSel.n[0],'',null,nearSel.ll))}" target="_blank" rel="noopener">${ic('pin')}Google</a><button class="iconbtn" data-act="mapUnsel" aria-label="${t('close')}">${ic('x')}</button></div>`}
   return `<header class="top"><div class="toprow"><h1 class="ttl">${t('map')}</h1>${R?`<button class="pillbtn" data-act="routeClear">${ic('route')}${t('routeOf')(t('dayN')(S.mapRoute.d))}${ic('x')}</button>`:''}</div></header>
-  <div class="mapbox"><svg id="mapsvg" viewBox="${MV.x} ${MV.y} ${MV.w} ${MV.h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${t('map')} ${t('riyadh')}">${decor()}${route}<g id="pins">${pins}</g>${labelsLayer()}</svg>
-    <div class="mapcity">${t('riyadh')}</div>
+  <div class="mapbox"><div id="mapslot" role="application" aria-label="${t('map')} ${t('riyadh')}"></div>
+    ${MAPREADY?'':`<div class="mapwait">${t('loading')}</div>`}
     <div class="mapctl"><button data-act="mzoom" data-v="in" aria-label="${t('zoomIn')}">${ic('plus')}</button><button data-act="mzoom" data-v="out" aria-label="${t('zoomOut')}">${ic('minus')}</button><button data-act="mreset" aria-label="${t('resetMap')}">${ic('reset')}</button><button data-act="locate" class="${S.me?'on':''}" aria-label="${t('myLoc')}" title="${t('myLoc')}">${ic('locate')}</button></div>
     ${card}
   </div>`;
 }
-function upp(svg){const r=svg.getBoundingClientRect();return Math.max(MV.w/r.width,MV.h/r.height)}
-function setPinScale(){const svg=document.getElementById('mapsvg');if(!svg)return;const u=upp(svg);svg.classList.toggle('zoomed',MV.w<coreMV().w*0.42);svg.style.setProperty('--u',u);placeLabels(svg)}   /* pins scale through the --u variable: one write per zoom step */
-/* short names under every pin; a name is hidden only where it would overlap one already shown
-   (selected/route pins first, then SAWAH places, then the other map places) */
-let LBLRAF=0;function placeLabels(svg){cancelAnimationFrame(LBLRAF);LBLRAF=requestAnimationFrame(()=>{
-  const m=svg.getScreenCTM();if(!m)return;const R=svg.getBoundingClientRect();
-  const labs=[...svg.querySelectorAll('.lbl')].map(g=>({g,e:g.firstChild,p:+g.dataset.p})).sort((a,b)=>a.p-b.p);
-  const C=48,grid=new Map(),keys=b=>{const k=[];for(let x=Math.floor(b.l/C);x<=Math.floor(b.r/C);x++)for(let y=Math.floor(b.t/C);y<=Math.floor(b.b/C);y++)k.push(x+':'+y);return k};
-  const hit=b=>keys(b).some(k=>(grid.get(k)||[]).some(q=>b.l<q.r+3&&b.r>q.l-3&&b.t<q.b+1&&b.b>q.t-1));
-  const add=b=>keys(b).forEach(k=>{const a=grid.get(k);a?a.push(b):grid.set(k,[b])});
-  for(const {e,g,p} of labs){
-    const x=+g.dataset.x,y=+g.dataset.y,sx=m.a*x+m.e,sy=m.d*y+m.f,sc=g.dataset.sel?1.4:1,w=(+e.dataset.w||8)*5.4*sc+6,top=sy+4*sc,b={l:sx-w/2,r:sx+w/2,t:top,b:top+12*sc};
-    if(p>0&&(b.r<R.left||b.l>R.right||b.b<R.top||b.t>R.bottom||hit(b))){e.style.display='none';continue}
-    add(b);e.style.display='block';
-  }})}
-function applyMV(){const svg=document.getElementById('mapsvg');if(!svg)return;svg.setAttribute('viewBox',`${MV.x} ${MV.y} ${MV.w} ${MV.h}`);setPinScale()}
-function zoomAt(f,cx,cy,base){
-  const svg=document.getElementById('mapsvg'),r=svg.getBoundingClientRect(),G=geo(),s=Math.max(base.w/r.width,base.h/r.height);
-  const px=(cx-r.left-(r.width-base.w/s)/2)*s+base.x, py=(cy-r.top-(r.height-base.h/s)/2)*s+base.y;
-  const nw=Math.min(G.W*1.1,Math.max(G.W/120,base.w*f)), k=nw/base.w;
-  MV.x=px-(px-base.x)*k; MV.y=py-(py-base.y)*k; MV.w=nw; MV.h=base.h*k; applyMV();
-}
-function attachMap(){
-  const svg=document.getElementById('mapsvg'); if(!svg) return; setPinScale();
-  const pts=new Map(); let start=null;
-  const snap=()=>{start={mv:{...MV},pts:new Map(pts)}};
-  svg.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});MAPDRAG=false;snap()});
-  svg.addEventListener('pointermove',e=>{
-    if(!pts.has(e.pointerId)||!start) return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pts.size===1&&start.pts.size===1){const p0=[...start.pts.values()][0],p=[...pts.values()][0],dx=p.x-p0.x,dy=p.y-p0.y;
-      if(Math.abs(dx)+Math.abs(dy)>6) MAPDRAG=true; if(!MAPDRAG) return;
-      const r=svg.getBoundingClientRect(),u=Math.max(start.mv.w/r.width,start.mv.h/r.height); MV.x=start.mv.x-dx*u; MV.y=start.mv.y-dy*u; applyMV();}
-    else if(pts.size===2&&start.pts.size===2){const [a,b]=[...pts.values()],[a0,b0]=[...start.pts.values()];MAPDRAG=true;
-      zoomAt(Math.hypot(a0.x-b0.x,a0.y-b0.y)/Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),(a.x+b.x)/2,(a.y+b.y)/2,start.mv)}
+function loadML(){
+  if(MLP) return MLP;
+  MLP=new Promise((res,rej)=>{
+    const l=document.createElement('link');l.rel='stylesheet';l.href=ML_CSS;document.head.appendChild(l);
+    const sc=document.createElement('script');sc.src=ML_JS;sc.async=true;
+    sc.onload=()=>{try{maplibregl.setRTLTextPlugin(ML_RTL,true)}catch(e){}res()};
+    sc.onerror=()=>{MLP=null;rej()};document.head.appendChild(sc);
   });
-  const end=e=>{pts.delete(e.pointerId);snap()};
-  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end); svg.addEventListener('pointerleave',end);
-  svg.addEventListener('click',e=>{if(!S.pickMe||MAPDRAG)return;const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());setMe(geo().inv(q.x,q.y))});
-  svg.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.deltaY>0?1.18:1/1.18,e.clientX,e.clientY,{...MV})},{passive:false});
-  if(!window.__mapResize){window.__mapResize=1;addEventListener('resize',setPinScale)}
+  return MLP;
+}
+const isDark=()=>S.theme==='dark'||(S.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';
+const nameExpr=()=>S.lang==='ar'?['coalesce',['get','name:ar'],['get','name']]:['coalesce',['get','name:en'],['get','name_en'],['get','name']];
+function localizeBase(){ // base map labels in the app language (Arabic or English names from OpenStreetMap)
+  for(const l of MAP.getStyle().layers){
+    if(l.type!=='symbol'||l.id.startsWith('sw-'))continue;
+    const tf=l.layout&&l.layout['text-field'];if(!tf)continue;
+    const s=JSON.stringify(tf);if(/name/.test(s)&&!/ref|housenumber/.test(s))MAP.setLayoutProperty(l.id,'text-field',nameExpr());
+  }
+}
+function kColor(){return ['match',['get','k'],'heritage',cssv('--i-heritage'),'culture',cssv('--i-culture'),'nature',cssv('--i-nature'),'shopping',cssv('--i-shopping'),'entertainment',cssv('--i-entertainment'),'meal',cssv('--i-meal'),'hotel',cssv('--i-hotel'),cssv('--i-culture')]}
+function addOwnLayers(){
+  const font=['Noto Sans Bold'], halo=cssv('--surface'), ink=cssv('--fg');
+  MAP.addSource('sw-near',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  MAP.addSource('sw-core',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  MAP.addSource('sw-route',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  MAP.addLayer({id:'sw-route-casing',type:'line',source:'sw-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':halo,'line-width':8}});
+  MAP.addLayer({id:'sw-route-line',type:'line',source:'sw-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':cssv('--accent'),'line-width':4.5}});
+  MAP.addLayer({id:'sw-near-dot',type:'circle',source:'sw-near',minzoom:12,paint:{'circle-color':kColor(),'circle-radius':['interpolate',['linear'],['zoom'],10,2,13,3.5,16,6],'circle-stroke-color':halo,'circle-stroke-width':1,'circle-opacity':['case',['get','dim'],.35,.9],'circle-stroke-opacity':['case',['get','dim'],.35,1]}});
+  MAP.addLayer({id:'sw-core-dot',type:'circle',source:'sw-core',paint:{'circle-color':kColor(),'circle-radius':['interpolate',['linear'],['zoom'],9,4,12,6.5,16,9],'circle-stroke-color':halo,'circle-stroke-width':2,'circle-opacity':['case',['get','dim'],.4,1],'circle-stroke-opacity':['case',['get','dim'],.4,1]}});
+  MAP.addLayer({id:'sw-near-lbl',type:'symbol',source:'sw-near',minzoom:15,layout:{'text-field':['get','name'],'text-font':font,'text-size':11,'text-offset':[0,1],'text-anchor':'top','text-max-width':8,'text-optional':true},paint:{'text-color':ink,'text-halo-color':halo,'text-halo-width':1.5}});
+  MAP.addLayer({id:'sw-core-lbl',type:'symbol',source:'sw-core',minzoom:11.5,layout:{'text-field':['get','name'],'text-font':font,'text-size':12.5,'text-offset':[0,1.1],'text-anchor':'top','text-max-width':8},paint:{'text-color':ink,'text-halo-color':halo,'text-halo-width':2}});
+  const hit=(layer,fn)=>{MAP.on('click',layer,e=>{if(S.pickMe)return;const f=e.features&&e.features[0];if(f){e.originalEvent.__sw=1;fn(f.properties.id)}});
+    MAP.on('mouseenter',layer,()=>MAP.getCanvas().style.cursor='pointer');MAP.on('mouseleave',layer,()=>MAP.getCanvas().style.cursor='')};
+  hit('sw-core-dot',id=>{S.mapSel=id;S.nearFrom=null;render()});
+  hit('sw-near-dot',id=>{S.mapSel='n:'+id;render()});
+}
+function onStyleReady(){MAPSTYLE=MAP.__style;addOwnLayers();localizeBase();MAPREADY=true;const w=document.querySelector('.mapwait');if(w)w.remove();syncMap()}
+function attachMap(){
+  const slot=document.getElementById('mapslot'); if(!slot) return;
+  if(!MAPEL){MAPEL=document.createElement('div');MAPEL.className='mlmap'}
+  slot.appendChild(MAPEL);
+  if(MAP){MAP.resize();syncMap();return}
+  loadML().then(()=>{
+    if(MAP) return;
+    const dark=isDark();
+    MAP=new maplibregl.Map({container:MAPEL,style:MSTYLE(dark),bounds:CORE,maxBounds:[[45.4,23.6],[47.4,25.5]],
+      attributionControl:false,dragRotate:false,pitchWithRotate:false,touchPitch:false});
+    MAP.__style=MSTYLE(dark);
+    MAP.touchZoomRotate.disableRotation();
+    MAP.addControl(new maplibregl.AttributionControl({compact:false}),'bottom-left');
+    MAP.on('load',onStyleReady);
+    MAP.on('click',e=>{if(e.originalEvent.__sw)return;if(S.pickMe){setMe([e.lngLat.lat,e.lngLat.lng]);return}});
+  }).catch(()=>{const w=document.querySelector('.mapwait');if(w)w.textContent=t('mapFail')});
+}
+function syncMap(){
+  if(!MAP||!MAPREADY) return;
+  MAP.resize();
+  const want=MSTYLE(isDark());
+  if(want!==MAPSTYLE){MAPREADY=false;MAP.__style=want;MAP.once('style.load',onStyleReady);MAP.setStyle(want,{diff:false});return}
+  const R=routeStops(), hotelId=R&&R.pl.hotel;
+  const F=(id,ll,props)=>({type:'Feature',geometry:{type:'Point',coordinates:[ll[1],ll[0]]},properties:{id,...props}});
+  MAP.getSource('sw-core').setData({type:'FeatureCollection',features:mapPoints().filter(o=>o.id!==S.mapSel).map(o=>F(o.id,o.ll,{k:o.k,name:L(o.p.n),dim:!!(R&&o.id!==hotelId)}))});
+  MAP.getSource('sw-near').setData({type:'FeatureCollection',features:D.near.filter(x=>'n:'+x.id!==S.mapSel).map(x=>F(x.id,x.ll,{k:x.hotel?'hotel':NK[x.cat]||'culture',name:L(x.n),dim:!!R}))});
+  // route: straight lines at once, then the real road path when the server can give it
+  let line=null;
+  if(R){const hl=hotelId&&byId[hotelId].ll?[byId[hotelId].ll]:[];const ll=[...hl,...R.stops.filter(x=>x.ll).map(x=>x.ll),...hl];
+    const key=ll.map(a=>a.map(v=>v.toFixed(5)).join(',')).join(';');ROUTEKEY=key;
+    line=ROUTEC[key]||ll.map(a=>[a[1],a[0]]);
+    if(!ROUTEC[key]&&ll.length>1&&ll.length<=40) roadRoute(key,ll);
+    MAP.setPaintProperty('sw-route-line','line-dasharray',ROUTEC[key]?[1,0]:[1.2,1.6]);}
+  MAP.getSource('sw-route').setData({type:'FeatureCollection',features:line?[{type:'Feature',geometry:{type:'LineString',coordinates:line},properties:{}}]:[]});
+  // HTML markers: route numbers, the selected place, and "you are here"
+  MK.forEach(m=>m.remove());MK=[];
+  const mk=(ll,html,cls,act,v,title)=>{const el=document.createElement('div');el.className='mk '+cls;el.innerHTML=html;if(act){el.dataset.act=act;el.dataset.v=v}if(title)el.title=title;
+    MK.push(new maplibregl.Marker({element:el,anchor:cls.includes('mk-me')?'center':'bottom'}).setLngLat([ll[1],ll[0]]).addTo(MAP))};
+  const svgPin=inner=>`<svg viewBox="-13 -36 26 37" width="30" height="42">${pinPath}${inner||'<circle cy="-21" r="4.6"/>'}</svg>`;
+  if(R) R.stops.forEach((x,i)=>{if(x.ll)mk(x.ll,svgPin(`<text y="-17" text-anchor="middle">${i+1}</text>`),'mk-route','routeStop',i,pname(x.p,x.s))});
+  const sel=S.mapSel&&!String(S.mapSel).startsWith('n:')?byId[S.mapSel]:null;
+  const nearSel=S.mapSel&&String(S.mapSel).startsWith('n:')?D.near.find(x=>x.id===S.mapSel.slice(2)):null;
+  const sll=sel?llOf(sel):nearSel?nearSel.ll:null;
+  if(sll) mk(sll,svgPin(),'mk-sel','','',L((sel||nearSel).n));
+  if(S.me) mk(S.me,'<i class="halo"></i><i class="dotm"></i>','mk-me','','',t('yourLoc'));
+  // camera
+  if(CAM){const c=CAM;CAM=null;
+    if(c.b) MAP.fitBounds(c.b,{padding:c.pad||30,maxZoom:15.5,duration:400});
+    else if(c.c) MAP.flyTo({center:c.c,zoom:Math.max(MAP.getZoom(),c.z||15),duration:700});}
+}
+async function roadRoute(key,ll){
+  try{
+    const r=await fetch('/api/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({coords:ll.map(a=>[a[1],a[0]])})});
+    if(!r.ok) return; const j=await r.json(); if(!Array.isArray(j.line)||j.line.length<2) return;
+    ROUTEC[key]=j.line; if(ROUTEKEY===key&&S.tab==='map') syncMap();
+  }catch(e){}
 }
 function setMe(ll){S.pickMe=false;if(!inMap(ll)){toast(t('locOut'));render();return}S.me=ll;S.meList=true;S.mapSel=null;S.mapRoute=null;focusLL(ll);render()}
 function locateMe(){
@@ -1007,12 +1037,6 @@ function locateMe(){
   toast(t('locating'));
   navigator.geolocation.getCurrentPosition(p=>setMe([p.coords.latitude,p.coords.longitude]),()=>{S.pickMe=true;render()},{enableHighAccuracy:true,timeout:9000,maximumAge:60000});
 }
-function focusLL(ll){const G=geo(),[x,y]=G.P(...ll),c=coreMV(),w=c.w/5,h=c.h/5;MV={x:x-w/2,y:y-h/2,w,h}}
-function focusPlace(id){const p=byId[id],ll=llOf(p);S.mapRoute=null;S.mapSel=p.branches?(p.branches.find(b=>byId[b].ll)||id):id;if(ll)focusLL(ll)}
-function fitRoute(){const R=routeStops();if(!R)return;const ll=R.stops.map(x=>x.ll).filter(Boolean);if(!ll.length)return;
-  const la=ll.map(x=>x[0]),lo=ll.map(x=>x[1]);let n=Math.max(...la),s=Math.min(...la),w=Math.min(...lo),e=Math.max(...lo);
-  const minSpan=0.03;if(n-s<minSpan){const m=(n+s)/2;n=m+minSpan/2;s=m-minSpan/2}if(e-w<minSpan){const m=(e+w)/2;e=m+minSpan/2;w=m-minSpan/2}
-  MV=boxMV(n,s,w,e,0.18)}
 
 /* ---------- render ---------- */
 const view=document.getElementById('view');
@@ -1658,13 +1682,13 @@ document.addEventListener('click',e=>{
     case 'meCancel': S.pickMe=false;render();break;
     case 'noop': break;
     case 'mapUnsel': S.mapSel=null;S.nearFrom=null;render();break;
-    case 'mzoom':{const svg=document.getElementById('mapsvg'),r=svg.getBoundingClientRect();zoomAt(v==='in'?1/1.5:1.5,r.left+r.width/2,r.top+r.height/2,{...MV});break}
-    case 'mreset': if(S.mapRoute)fitRoute();else MV=coreMV();applyMV();break;
+    case 'mzoom': if(MAP)v==='in'?MAP.zoomIn():MAP.zoomOut();break;
+    case 'mreset': if(S.mapRoute)fitRoute();else coreView();syncMap();break;
     case 'showOnMap':{const st=SC&&SC.type==='stop'?sheetStop():null;if(st){const ll=PL.locOf(D,st);S.mapRoute=null;S.mapSel=st.br||v;if(ll)focusLL(ll)}else focusPlace(v);S.nearFrom=null;S.tab='map';S.detail=null;closeSheet();render();scrollTo(0,0);break}
     case 'nearMap':{const x=D.near.find(n=>n.id===v);S.mapRoute=null;S.mapSel='n:'+v;S.nearFrom=b.dataset.from;focusLL(x.ll);S.tab='map';S.detail=null;closeSheet();render();scrollTo(0,0);break}
     case 'routeMap':{S.mapRoute={d:+v,saved:S.detail||null};S.mapSel=null;fitRoute();S.tab='map';const keep=S.detail;S.detail=null;S.mapRoute.saved=keep;render();scrollTo(0,0);break}
     case 'routeBack':{const r=S.mapRoute;S.tab='plan';if(r.saved){S.detail=r.saved}else S.planView='result';S.openDays={[r.d]:true};render();scrollTo(0,0);break}
-    case 'routeClear': S.mapRoute=null;MV=coreMV();render();break;
+    case 'routeClear': S.mapRoute=null;coreView();render();break;
     case 'shareOpen': openSheet({type:'share'});break;
     case 'shareBack': SC.mode='';renderSheet();break;
     case 'shareCopy': copyText(planText(curPlan()));break;
