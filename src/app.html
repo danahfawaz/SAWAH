@@ -495,7 +495,7 @@ html,body{max-width:100%;overflow-x:hidden}
 
 /* ---------- AI guide (plan tab) ---------- */
 .guidebar{display:flex;align-items:center;gap:12px;padding:8px 14px 8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:18px}
-.gav{width:78px;height:50px;flex:none;display:block}
+.gav{width:84px;height:60px;flex:none;display:block;object-fit:contain;object-position:center bottom;background:var(--accent-soft);border-radius:42px 42px 12px 12px;padding:4px 4px 0}
 .guidebar .gtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .guidebar .gt{font-family:var(--f-display);font-weight:700;font-size:17px;line-height:1.25}
 .guidebar .gs{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
@@ -550,7 +550,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-const IMG={kingdom:'data:image/webp;base64,__IMG_kingdom__',fort:'data:image/webp;base64,__IMG_fort__',mud:'data:image/webp;base64,__IMG_mud__',fountain:'data:image/webp;base64,__IMG_fountain__',emblem:'data:image/webp;base64,__IMG_emblem__'};
+const IMG={kingdom:'data:image/webp;base64,__IMG_kingdom__',fort:'data:image/webp;base64,__IMG_fort__',mud:'data:image/webp;base64,__IMG_mud__',fountain:'data:image/webp;base64,__IMG_fountain__',emblem:'data:image/webp;base64,__IMG_emblem__',guides:'data:image/webp;base64,__IMG_guides__'};
 
 /* ---------- icons ---------- */
 const P={
@@ -1081,29 +1081,7 @@ function renderPlan(){
 }
 
 /* ---------- AI guide: a chat replaces the trip form ---------- */
-const GUIDE_SVG=`<svg class="gav" viewBox="0 0 132 84" role="img" aria-label="">
-<defs><pattern id="shm" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#F4EEE6"/><rect width="2" height="2" fill="#C2443A"/><rect x="2" y="2" width="2" height="2" fill="#C2443A"/></pattern>
-<clipPath id="gclip"><path d="M8 84V38C8 16 30 4 66 4s58 12 58 34v46z"/></clipPath></defs>
-<path d="M8 84V38C8 16 30 4 66 4s58 12 58 34v46z" fill="var(--accent-soft)"/>
-<g clip-path="url(#gclip)">
-<path d="M14 86c2-17 14-24 30-24s28 7 30 24z" fill="#FBF8F2" stroke="#D9CFC2" stroke-width="1"/>
-<path d="M40 62l4 9 4-9" fill="none" stroke="#D9CFC2" stroke-width="1.2"/>
-<circle cx="44" cy="41" r="13" fill="#C98F64"/>
-<path d="M40.5 47.5c2 1.8 5 1.8 7 0" fill="none" stroke="#8E4A3A" stroke-width="1.6" stroke-linecap="round"/><circle cx="36.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/><circle cx="51.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/>
-<path d="M37.5 41q2-2 4 0M46.5 41q2-2 4 0" fill="none" stroke="#2E211A" stroke-width="1.6" stroke-linecap="round"/>
-<path d="M28.5 46C27 27 34 19 44 19s17 8 15.5 27l7 24c-7-4-9.5-11-10-22 0-10-5-16-12.5-16S31.5 38 31.5 48c-.5 11-3 18-10 22z" fill="url(#shm)" stroke="#A9382F" stroke-width=".8"/>
-<ellipse cx="44" cy="23" rx="13" ry="3" fill="none" stroke="#1E1714" stroke-width="1.9"/>
-<ellipse cx="44" cy="25.8" rx="13.6" ry="3" fill="none" stroke="#1E1714" stroke-width="1.9"/>
-<path d="M60 86c2-17 14-24 30-24s28 7 30 24z" fill="#2F5A4E"/>
-<path d="M80 63l10 11 10-11" fill="none" stroke="#D9A23A" stroke-width="2.2" stroke-linejoin="round"/>
-<g fill="#D9A23A"><circle cx="78" cy="70" r="1.3"/><circle cx="102" cy="70" r="1.3"/><circle cx="74" cy="76" r="1.3"/><circle cx="106" cy="76" r="1.3"/><circle cx="90" cy="80" r="1.6"/><circle cx="84" cy="78" r="1.1"/><circle cx="96" cy="78" r="1.1"/></g>
-<circle cx="90" cy="42" r="12.5" fill="#D9A47C"/>
-<path d="M83.5 41.5q2-2 4 0M92.5 41.5q2-2 4 0" fill="none" stroke="#3A2A20" stroke-width="1.6" stroke-linecap="round"/>
-<path d="M86.5 47.5c2 1.8 5 1.8 7 0" fill="none" stroke="#8E4A3A" stroke-width="1.6" stroke-linecap="round"/>
-<circle cx="82.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/><circle cx="97.5" cy="46" r="2" fill="#E58C7A" opacity=".45"/>
-<path d="M74 47c-2-20 6-28.5 16-28.5S108 27 106 47c0 11 4 17 9 21-11-1-15-8-15.5-18C99.5 40 95.5 33.5 90 33.5S80.5 40 80.5 50C80 60 76 67 65 68c5-4 9-10 9-21z" fill="#2A2220"/>
-<path d="M80.5 50C80.5 40 84.5 33.5 90 33.5S99.5 40 99.5 50" fill="none" stroke="#D9A23A" stroke-width="1.4" stroke-dasharray="2 2.2"/><path d="M78 24c4-3 8-4.5 12-4.5s8 1.5 12 4.5" fill="none" stroke="#4A3C36" stroke-width="1.2" stroke-linecap="round"/>
-</g><g stroke="#D9A23A" stroke-width="2" stroke-linecap="round"><path d="M114 14l3-6M119 20l6-3M108 11l-.5-6"/></g></svg>`;
+const GUIDE_SVG=`<img class="gav" src="${IMG.guides}" alt="">`;
 const G={msgs:[],draft:{},busy:false,err:null,input:''};
 function gReset(){G.msgs=[{r:'a',k:'gHi'}];G.draft={};G.busy=false;G.err=null;G.input=''}
 gReset();
