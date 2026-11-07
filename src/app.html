@@ -1297,7 +1297,7 @@ async function gAsk(){
   try{
     const r=await fetch('/api/guide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,draft:G.draft,lang:S.lang})});
     const j=await r.json().catch(()=>({}));
-    if(!r.ok){G.err=j.error==='not_configured'?'gNoKey':j.error==='busy'?'gBusy':'gErr';G.errCode=[r.status,j.error,j.status].filter(Boolean).join(' · ');G.busy=false;gRender();return}
+    if(!r.ok){G.err=j.error==='not_configured'?'gNoKey':(j.error==='busy'||j.status===503||j.status===500)?'gBusy':'gErr';G.errCode=[r.status,j.error,j.status].filter(Boolean).join(' · ');G.busy=false;gRender();return}
     G.draft={...G.draft,...(j.fields||{})};
     G.msgs.push({r:'a',t:j.reply});G.busy=false;
     if(j.confirmed&&!gMissing(G.draft).length){gRender();gGo();return}

@@ -105,15 +105,19 @@ async function askGemini(model, key, body) {
 // is tried again without the strict JSON schema. Returns {out} or {error, status, detail}.
 async function generate(key, request) {
   let last = { error: 'no_model' };
+  const busyTried = new Set();
   for (const model of MODELS) {
     for (const strict of [true, false]) {
       const body = strict ? request : { ...request, generationConfig: { ...request.generationConfig, responseSchema: undefined } };
       let r;
       try { r = await askGemini(model, key, body); } catch { return { error: 'timeout', model }; }
-      const data = await r.json().catch(() => null);
-      const detail = data && data.error && data.error.message ? String(data.error.message).slice(0, 300) : undefined;
+      let data = await r.json().catch(() => null);
+      let detail = data && data.error && data.error.message ? String(data.error.message).slice(0, 300) : undefined;
       if (r.status === 404) { last = { error: 'no_model', model, detail }; break; }
       if (r.status === 429) return { error: 'busy', model, detail };
+      // 500/503 = Google's model is busy for a moment: wait a little, try once more, then use the next model
+      if ((r.status === 503 || r.status === 500) && !busyTried.has(model)) { busyTried.add(model); await new Promise(s => setTimeout(s, 1200)); r = await askGemini(model, key, body).catch(() => null); if (!r) return { error: 'timeout', model }; data = await r.json().catch(() => null); detail = data && data.error && data.error.message ? String(data.error.message).slice(0, 300) : undefined; }
+      if (r.status === 503 || r.status === 500) { last = { error: 'upstream', status: r.status, model, detail }; break; }
       if (r.status === 400 && strict) { last = { error: 'upstream', status: 400, model, detail }; continue; }
       if (!r.ok) return { error: 'upstream', status: r.status, model, detail };
       const c = data && data.candidates && data.candidates[0];
